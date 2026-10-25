@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #03060f;
+    --card: #0a1120;
+    --line: #12254d;
+    --accent: #22c7f0;
+    --text: #eaf2ff;
+    --muted: #7f95bd;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .grid {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color .2s, transform .2s;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+    display: block;
+    width: 100%;
+  }
+  .card:hover, .card:focus-visible {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    outline: none;
+  }
+  .thumb {
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(135deg, #0a2a8c 0%, #061a52 50%, #020b2b 100%);
+    display: grid;
+    place-items: center;
+  }
+  .badge {
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.25);
+    display: grid; place-items: center;
+    font-size: 28px;
+  }
+  .info { padding: 20px 22px 22px; }
+  .info h3 {
+    font-family: Syne, sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    line-height: 1.25;
+  }
+  .info p { color: var(--muted); font-size: .95rem; margin-top: 6px; }
+
+  /* Ventana del video */
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(2,5,14,.88);
+    display: none;
+    place-items: center;
+    padding: 20px;
+    z-index: 10;
+  }
+  .modal.open { display: grid; }
+  .modal-box { width: min(960px, 100%); }
+  .modal-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .modal-bar h2 { font-family: Syne, sans-serif; font-size: 1.15rem; }
+  .close {
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px 14px; cursor: pointer; font: inherit;
+  }
+  .close:hover { border-color: var(--accent); }
+  .frame { aspect-ratio: 16 / 9; width: 100%; border: 0; border-radius: 14px; background: #000; }
+  .msg {
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--line); border-radius: 14px; background: var(--card);
+    display: grid; place-items: center; text-align: center;
+    color: var(--muted); padding: 24px;
+  }
+</style>
+</head>
+<body>
+
+<main class="grid" id="grid"></main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <div class="modal-bar">
+      <h2 id="modal-title"></h2>
+      <button class="close" id="close">Cerrar</button>
+    </div>
+    <div id="player"></div>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  //  EDITA AQUÍ TUS CLASES
+  //  link: pega el enlace completo del video de Google Drive, por ejemplo
+  //  https://drive.google.com/file/d/XXXXXXXX/view?usp=sharing
+  //  locked: true = bloqueada (candado), false = se puede ver
+  // ============================================================
+  const clases = [
+    { numero: 1, titulo: "2026-10-16 21.10.09 Clase", link: "https://drive.google.com/file/d/1hcZESbscxM8VJou1umkBVKk8eXv1usQn/view?usp=drive_link", locked: false },
+    { numero: 2, titulo: "Velas japonesas y tendencias",          link: "", locked: true },
+    { numero: 3, titulo: "Boom y Crash en la práctica",           link: "", locked: true },
+    { numero: 4, titulo: "Psicotrading",                          link: "", locked: true }
+  ];
+
+  const grid = document.getElementById("grid");
+  const modal = document.getElementById("modal");
+  const player = document.getElementById("player");
+  const modalTitle = document.getElementById("modal-title");
+
+  clases.forEach(c => {
+    const card = document.createElement("button");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="thumb"><div class="badge">${c.locked ? "🔒" : "▶"}</div></div>
+      <div class="info">
+        <h3>${c.titulo}</h3>
+        <p>Clase ${c.numero}</p>
+      </div>`;
+    card.addEventListener("click", () => abrir(c));
+    grid.appendChild(card);
+  });
+
+  // Saca el ID del enlace de Drive (sirve el enlace completo o solo el ID)
+  function idDeDrive(link) {
+    if (!link) return "";
+    const m = link.match(/\/d\/([\w-]+)/) || link.match(/[?&]id=([\w-]+)/);
+    return m ? m[1] : link.trim();
+  }
+
+  function abrir(c) {
+    modalTitle.textContent = `Clase ${c.numero}: ${c.titulo}`;
+    if (c.locked) {
+      player.innerHTML = `<div class="msg">Esta clase está bloqueada por ahora.</div>`;
+    } else if (!idDeDrive(c.link)) {
+      player.innerHTML = `<div class="msg">Falta el enlace del video de Google Drive.</div>`;
+    } else {
+      player.innerHTML = `<iframe class="frame" src="https://drive.google.com/file/d/${idDeDrive(c.link)}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+    }
+    modal.classList.add("open");
+    document.getElementById("close").focus();
+  }
+
+  function cerrar() {
+    modal.classList.remove("open");
+    player.innerHTML = ""; // detiene el video
+  }
+
+  document.getElementById("close").addEventListener("click", cerrar);
+  modal.addEventListener("click", e => { if (e.target === modal) cerrar(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); });
+</script>
+</body>
+</html>
