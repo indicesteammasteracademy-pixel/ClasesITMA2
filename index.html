@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header>
+  <h1>Clases</h1>
+  <input id="q" type="search" placeholder="Buscar clases…">
+</header>
+
+<main>
+  <div class="panel" id="panel">
+    <h2>Subir una clase nueva</h2>
+    <p class="hint">Solo tú ves este panel. El video se guarda en tu carpeta de Drive y aparece para todos.</p>
+    <div class="row">
+      <input type="text" id="ptitulo" placeholder="Título de la clase">
+      <input type="file" id="parchivo" accept="video/*" style="color:var(--muted);max-width:100%">
+      <label><input type="checkbox" id="pbloq" checked> Subir bloqueada</label>
+      <button class="btn main" id="pok">Subir video</button>
+    </div>
+    <div class="bar" id="bar"><div id="fill"></div></div>
+    <p id="pmsg"></p>
+  </div>
+
+  <p class="nota" id="nota"></p>
+
+  <section id="home">
+    <div class="grid" id="grid"></div>
+    <p class="vacio" id="vacio" hidden>No se encontraron clases.</p>
+    <div class="footer"><button class="btn" id="admin">Acceso profesor</button></div>
+  </section>
+
+  <section id="watch">
+    <div>
+      <button class="btn" id="back">← Todas las clases</button>
+      <div id="player"></div>
+      <h2 id="wtitle"></h2>
+      <p class="sub" id="wsub"></p>
+    </div>
+    <aside id="side"><h3>Más clases</h3><div id="list"></div></aside>
+  </section>
+</main>
+
+<script src="js/app.js"></script>
+</body>
+</html>
