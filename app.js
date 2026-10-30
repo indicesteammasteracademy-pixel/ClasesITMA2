@@ -40,7 +40,7 @@
         $("nota").textContent = "";
       } catch (e) {
         clases = deBase();
-        $("nota").textContent = "No se pudo conectar con Drive; mostrando clases de ejemplo.";
+        $("nota").textContent = "No se pudo conectar con Drive (" + e.message + "); mostrando clases de ejemplo.";
       }
     }
     dibujar();
@@ -149,7 +149,7 @@
     try {
       const r = await post({ action: "adminList" });
       if (r.error) { clave = ""; alert(r.error); return; }
-    } catch (e) { clave = ""; alert("No se pudo conectar con el script."); return; }
+    } catch (e) { clave = ""; alert("No se pudo conectar con el script: " + e.message); return; }
     $("panel").classList.add("show");
     $("admin").style.display = "none";
     cargar();
