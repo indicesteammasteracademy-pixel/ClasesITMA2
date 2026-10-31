@@ -246,7 +246,7 @@
     const r = await post({ action: "alumnoAdd", email, code: $("acode").value.trim() });
     $("aok").disabled = false;
     if (r.error) { $("amsg").textContent = r.error; return; }
-    $("amsg").textContent = "Agregado: " + r.email + " · código " + r.code;
+    $("amsg").textContent = "Agregado: " + r.email + " · código " + r.code + (r.enviado ? " · correo enviado" : " · no se pudo enviar el correo, pásale el código tú");
     $("aemail").value = ""; $("acode").value = "";
     cargarAlumnos();
   };
