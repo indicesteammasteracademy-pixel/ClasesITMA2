@@ -64,7 +64,7 @@
     } catch (e) {
       clases = [];
       $("nota").textContent = "No se pudo conectar con Drive (" + e.message + ").";
-      if (!clave && alumno) mostrarLogin("No se pudo conectar. Intenta de nuevo.");
+      if (!clave && alumno) $("nota").textContent = "No se pudo conectar. Revisa tu internet y recarga la página.";
     }
     dibujar();
   }
@@ -79,7 +79,7 @@
     alumno = { email, code };
     await cargar();
     $("lok").disabled = false;
-    if (alumno && $("recordar").checked) {
+    if (alumno) {
       try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
     }
     if (alumno) $("lcode").value = "";
