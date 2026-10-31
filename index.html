@@ -29,12 +29,24 @@
     <p id="pmsg"></p>
   </div>
 
+  <div class="panel" id="panelAlumnos">
+    <h2>Alumnos registrados</h2>
+    <p class="hint">Solo ellos pueden entrar. Agrega su correo; si dejas el código vacío, se crea uno solo. Pásale el código al alumno.</p>
+    <div class="row">
+      <input type="text" id="aemail" placeholder="correo del alumno" autocapitalize="none">
+      <input type="text" id="acode" placeholder="código (opcional)" autocapitalize="none">
+      <button class="btn main" id="aok">Agregar alumno</button>
+    </div>
+    <p id="amsg"></p>
+    <div id="alista"></div>
+  </div>
+
   <p class="nota" id="nota"></p>
 
   <section id="home">
     <div class="grid" id="grid"></div>
     <p class="vacio" id="vacio" hidden>No se encontraron clases.</p>
-    <div class="footer"><button class="btn" id="admin">Acceso profesor</button></div>
+    <div class="footer"><button class="btn" id="salir" style="display:none">Salir</button><button class="btn" id="admin">Acceso profesor</button></div>
   </section>
 
   <section id="watch">
@@ -47,6 +59,19 @@
     <aside id="side"><h3>Más clases</h3><div id="list"></div></aside>
   </section>
 </main>
+
+<div class="login" id="login">
+  <div class="login-box">
+    <h2>Entrar a las clases</h2>
+    <p>Escribe el correo con el que te registraron y tu código personal.</p>
+    <input type="text" id="lemail" placeholder="Correo" autocomplete="email" autocapitalize="none" inputmode="email">
+    <input type="password" id="lcode" placeholder="Código personal" autocomplete="current-password">
+    <label class="rec"><input type="checkbox" id="recordar" checked> Recordarme en este dispositivo</label>
+    <button class="btn main" id="lok">Entrar</button>
+    <p id="lerr"></p>
+    <button class="btn" id="lprof">Soy profesor</button>
+  </div>
+</div>
 
 <script src="app.js"></script>
 </body>

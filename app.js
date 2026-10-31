@@ -14,6 +14,8 @@
   const $ = id => document.getElementById(id);
   let clases = [];
   let clave = "";   // solo en memoria; el servidor es quien verifica la clave
+  let alumno = null; // {email, code} del alumno que entró
+  try { alumno = JSON.parse(localStorage.getItem("itma_alumno") || "null"); } catch (e) {}
 
   function idDeDrive(link) {
     if (!link) return "";
@@ -28,23 +30,64 @@
     return r.json();
   }
 
+  function mostrarLogin(msg) { $("login").classList.add("show"); $("lerr").textContent = msg || ""; }
+  function ocultarLogin() { $("login").classList.remove("show"); }
+  function cerrarSesion(msg) {
+    alumno = null;
+    try { localStorage.removeItem("itma_alumno"); } catch (e) {}
+    clases = [];
+    $("salir").style.display = "none";
+    dibujar();
+    mostrarLogin(msg);
+  }
+
   async function cargar() {
     if (!hayAPI()) {
       clases = deBase();
       $("nota").textContent = "Mostrando clases de ejemplo. Falta conectar con Drive (URL de Apps Script).";
-    } else {
-      try {
-        const r = clave ? await post({ action: "adminList" }) : await (await fetch(API)).json();
-        if (r.error) throw new Error(r.error);
-        clases = r.map(x => ({ titulo: x.title, id: x.id, locked: x.locked }));
-        $("nota").textContent = "";
-      } catch (e) {
-        clases = deBase();
-        $("nota").textContent = "No se pudo conectar con Drive (" + e.message + "); mostrando clases de ejemplo.";
+      ocultarLogin();
+      dibujar();
+      return;
+    }
+    if (!clave && !alumno) { mostrarLogin(); return; }
+    try {
+      const r = clave ? await post({ action: "adminList" })
+                      : await post({ action: "login", email: alumno.email, code: alumno.code });
+      if (r.error) {
+        if (!clave) { cerrarSesion(r.error); return; }
+        throw new Error(r.error);
       }
+      clases = r.map(x => ({ titulo: x.title, id: x.id, locked: x.locked }));
+      $("nota").textContent = "";
+      ocultarLogin();
+      if (!clave) $("salir").style.display = "inline-block";
+    } catch (e) {
+      clases = [];
+      $("nota").textContent = "No se pudo conectar con Drive (" + e.message + ").";
+      if (!clave && alumno) mostrarLogin("No se pudo conectar. Intenta de nuevo.");
     }
     dibujar();
   }
+
+  // ---------- Entrada de alumnos ----------
+  $("lok").onclick = async () => {
+    const email = $("lemail").value.trim().toLowerCase();
+    const code = $("lcode").value.trim();
+    if (!email || !code) { $("lerr").textContent = "Escribe tu correo y tu código."; return; }
+    $("lok").disabled = true;
+    $("lerr").textContent = "Verificando…";
+    alumno = { email, code };
+    await cargar();
+    $("lok").disabled = false;
+    if (alumno && $("recordar").checked) {
+      try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
+    }
+    if (alumno) $("lcode").value = "";
+  };
+  $("lcode").onkeydown = e => { if (e.key === "Enter") $("lok").click(); };
+  $("lemail").onkeydown = e => { if (e.key === "Enter") $("lcode").focus(); };
+  $("salir").onclick = () => { cerrarSesion(""); };
+  $("lprof").onclick = () => { $("admin").click(); };
 
   function miniatura(c) {
     const t = document.createElement("div");
@@ -151,8 +194,52 @@
       if (r.error) { clave = ""; alert(r.error); return; }
     } catch (e) { clave = ""; alert("No se pudo conectar con el script: " + e.message); return; }
     $("panel").classList.add("show");
+    $("panelAlumnos").classList.add("show");
     $("admin").style.display = "none";
+    ocultarLogin();
+    cargarAlumnos();
     cargar();
+  };
+
+  // ---------- Alumnos (solo profesor) ----------
+  async function cargarAlumnos() {
+    const r = await post({ action: "alumnoList" });
+    const box = $("alista");
+    box.innerHTML = "";
+    if (r.error) { $("amsg").textContent = r.error; return; }
+    if (!r.length) { box.innerHTML = '<p class="hint" style="color:var(--muted);margin-top:10px">Aún no hay alumnos registrados.</p>'; return; }
+    r.forEach(a => {
+      const row = document.createElement("div");
+      row.className = "al";
+      const t = document.createElement("span");
+      t.textContent = a.email + "  ·  código: ";
+      const c = document.createElement("code");
+      c.textContent = a.code;
+      t.appendChild(c);
+      const b = document.createElement("button");
+      b.className = "btn small";
+      b.textContent = "Quitar";
+      b.onclick = async () => {
+        if (!confirm("¿Quitar a " + a.email + "?")) return;
+        await post({ action: "alumnoDel", email: a.email });
+        cargarAlumnos();
+      };
+      row.appendChild(t);
+      row.appendChild(b);
+      box.appendChild(row);
+    });
+  }
+
+  $("aok").onclick = async () => {
+    const email = $("aemail").value.trim();
+    if (!email) { $("amsg").textContent = "Escribe el correo del alumno."; return; }
+    $("aok").disabled = true;
+    const r = await post({ action: "alumnoAdd", email, code: $("acode").value.trim() });
+    $("aok").disabled = false;
+    if (r.error) { $("amsg").textContent = r.error; return; }
+    $("amsg").textContent = "Agregado: " + r.email + " · código " + r.code;
+    $("aemail").value = ""; $("acode").value = "";
+    cargarAlumnos();
   };
 
   $("pok").onclick = async () => {

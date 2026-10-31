@@ -57,3 +57,17 @@
   .footer { display:flex; justify-content:flex-end; margin-top:40px; }
   .nota { color:var(--muted); font-size:.9rem; margin-bottom:16px; }
   .lockbtn { margin-top:10px; font-size:.8rem; padding:4px 10px; }
+
+  .login { position:fixed; inset:0; z-index:50; background:var(--bg); display:none; place-items:center; padding:20px; }
+  .login.show { display:grid; }
+  .login-box { width:min(400px,100%); background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px; display:flex; flex-direction:column; gap:12px; }
+  .login-box h2 { font-family:Syne,sans-serif; font-size:1.3rem; }
+  .login-box p { color:var(--muted); font-size:.95rem; }
+  .login-box input[type=text], .login-box input[type=password] { background:#050a16; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:12px; font:inherit; }
+  .login-box input:focus { outline:none; border-color:var(--accent); }
+  .rec { color:var(--muted); font-size:.9rem; display:flex; gap:8px; align-items:center; }
+  #lerr { color:#ff8a8a; min-height:1.2em; }
+  #amsg { margin-top:10px; color:var(--muted); font-size:.9rem; }
+  .al { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:10px 0; font-size:.95rem; }
+  .al code { color:var(--accent); background:#050a16; padding:3px 8px; border-radius:6px; }
+  .footer { gap:10px; }
