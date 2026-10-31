@@ -31,8 +31,24 @@
     return r.json();
   }
 
-  function mostrarLogin(msg) { $("login").classList.add("show"); $("lerr").textContent = msg || ""; }
-  function ocultarLogin() { $("login").classList.remove("show"); }
+  let tOcultar = null;
+  function mostrarLogin(msg) {
+    clearTimeout(tOcultar);
+    const l = $("login");
+    l.classList.remove("saliendo");
+    l.classList.add("show");
+    $("lerr").textContent = msg || "";
+    if (msg) {
+      const b = document.querySelector(".login-box");
+      b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
+    }
+  }
+  function ocultarLogin() {
+    const l = $("login");
+    if (!l.classList.contains("show") || l.classList.contains("saliendo")) return;
+    l.classList.add("saliendo");
+    tOcultar = setTimeout(() => l.classList.remove("show", "saliendo"), 450);
+  }
   function cerrarSesion(msg) {
     alumno = null;
     clave = "";
@@ -83,10 +99,12 @@
     const code = $("lcode").value.trim();
     if (!email || !code) { $("lerr").textContent = "Escribe tu correo y tu código."; return; }
     $("lok").disabled = true;
-    $("lerr").textContent = "Verificando…";
+    $("lok").classList.add("cargando");
+    $("lerr").textContent = "";
     alumno = { email, code };
     await cargar();
     $("lok").disabled = false;
+    $("lok").classList.remove("cargando");
     if (alumno) {
       try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
     }
@@ -95,6 +113,12 @@
   $("lcode").onkeydown = e => { if (e.key === "Enter") $("lok").click(); };
   $("lemail").onkeydown = e => { if (e.key === "Enter") $("lcode").focus(); };
   $("salir").onclick = () => { cerrarSesion(""); };
+  $("lver").onclick = () => {
+    const i = $("lcode");
+    const ver = i.type === "password";
+    i.type = ver ? "text" : "password";
+    $("lver").textContent = ver ? "🙈" : "👁";
+  };
   $("lprof").onclick = () => { $("admin").click(); };
 
   function miniatura(c) {

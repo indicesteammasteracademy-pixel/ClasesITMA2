@@ -62,14 +62,27 @@
 
 <div class="login" id="login">
   <div class="login-box">
-    <h2>Entrar a las clases</h2>
-    <p>Escribe el correo con el que te registraron y tu código personal.</p>
-    <input type="text" id="lemail" placeholder="Correo" autocomplete="email" autocapitalize="none" inputmode="email">
-    <input type="password" id="lcode" placeholder="Código personal" autocomplete="current-password">
-    <p class="hint-login">Solo tendrás que hacerlo una vez en este dispositivo.</p>
-    <button class="btn main" id="lok">Entrar</button>
+    <div class="lhead">
+      <h2>Bienvenido a ITMA Academy</h2>
+      <p>Ingresa con el correo con el que te registraron y tu código personal.</p>
+    </div>
+    <div class="lform">
+      <label class="campo"><span>Correo</span>
+        <input type="text" id="lemail" placeholder="tucorreo@gmail.com" autocomplete="email" autocapitalize="none" inputmode="email">
+      </label>
+      <label class="campo"><span>Código personal</span>
+        <div class="pw">
+          <input type="password" id="lcode" placeholder="••••••" autocomplete="current-password">
+          <button type="button" id="lver" aria-label="Mostrar u ocultar el código">👁</button>
+        </div>
+      </label>
+      <button class="btn main" id="lok"><span class="lt">Entrar</span><span class="spin"></span></button>
+    </div>
     <p id="lerr"></p>
-    <button class="btn" id="lprof">Soy profesor</button>
+    <div class="lpie">
+      <span>Solo tendrás que hacerlo una vez en este dispositivo.</span>
+      <button type="button" class="linkbtn" id="lprof">Soy profesor</button>
+    </div>
   </div>
 </div>
 
