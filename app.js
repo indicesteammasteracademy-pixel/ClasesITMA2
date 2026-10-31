@@ -16,6 +16,7 @@
   let clave = "";   // solo en memoria; el servidor es quien verifica la clave
   let alumno = null; // {email, code} del alumno que entró
   try { alumno = JSON.parse(localStorage.getItem("itma_alumno") || "null"); } catch (e) {}
+  try { clave = localStorage.getItem("itma_clave") || ""; } catch (e) {}
 
   function idDeDrive(link) {
     if (!link) return "";
@@ -34,9 +35,13 @@
   function ocultarLogin() { $("login").classList.remove("show"); }
   function cerrarSesion(msg) {
     alumno = null;
-    try { localStorage.removeItem("itma_alumno"); } catch (e) {}
+    clave = "";
+    try { localStorage.removeItem("itma_alumno"); localStorage.removeItem("itma_clave"); } catch (e) {}
     clases = [];
     $("salir").style.display = "none";
+    $("admin").style.display = "inline-block";
+    $("panel").classList.remove("show");
+    $("panelAlumnos").classList.remove("show");
     dibujar();
     mostrarLogin(msg);
   }
@@ -53,14 +58,17 @@
     try {
       const r = clave ? await post({ action: "adminList" })
                       : await post({ action: "login", email: alumno.email, code: alumno.code });
-      if (r.error) {
-        if (!clave) { cerrarSesion(r.error); return; }
-        throw new Error(r.error);
-      }
+      if (r.error) { cerrarSesion(r.error); return; }
       clases = r.map(x => ({ titulo: x.title, id: x.id, locked: x.locked }));
       $("nota").textContent = "";
       ocultarLogin();
-      if (!clave) $("salir").style.display = "inline-block";
+      $("salir").style.display = "inline-block";
+      if (clave) {
+        $("panel").classList.add("show");
+        $("panelAlumnos").classList.add("show");
+        $("admin").style.display = "none";
+        cargarAlumnos();
+      }
     } catch (e) {
       clases = [];
       $("nota").textContent = "No se pudo conectar con Drive (" + e.message + ").";
@@ -196,6 +204,7 @@
     $("panel").classList.add("show");
     $("panelAlumnos").classList.add("show");
     $("admin").style.display = "none";
+    try { localStorage.setItem("itma_clave", clave); } catch (e) {}
     ocultarLogin();
     cargarAlumnos();
     cargar();
