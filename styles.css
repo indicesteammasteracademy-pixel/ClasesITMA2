@@ -107,3 +107,12 @@
   @media (prefers-reduced-motion:reduce) {
     .login::before, .login-box { animation:none; }
   }
+
+  .visto { position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:var(--accent); color:#02101a; display:grid; place-items:center; font-weight:700; box-shadow:0 0 14px rgba(34,199,240,.6); }
+  .item .visto { width:20px; height:20px; font-size:.7rem; top:6px; right:6px; }
+  #continuar { margin-bottom:22px; padding:12px 18px; max-width:100%; text-align:left; }
+  #continuar:disabled { background:var(--card); color:var(--muted); border-color:var(--line); cursor:default; font-weight:400; }
+
+  .modulo { margin-bottom:40px; }
+  .modulo h2 { font-family:Syne,sans-serif; font-size:1.3rem; margin-bottom:16px; padding-left:12px; border-left:4px solid var(--accent); }
+  #pmod { background:#050a16; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font:inherit; }

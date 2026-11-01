@@ -6,7 +6,7 @@
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 
@@ -21,8 +21,10 @@
     <p class="hint">Solo tú ves este panel. El video se guarda en tu carpeta de Drive y aparece para todos.</p>
     <div class="row">
       <input type="text" id="ptitulo" placeholder="Título de la clase">
+      <select id="pmod" aria-label="Módulo"></select>
       <input type="file" id="parchivo" accept="video/*" style="color:var(--muted);max-width:100%">
       <label><input type="checkbox" id="pbloq" checked> Subir bloqueada</label>
+      <label><input type="checkbox" id="pavisar" checked> Avisar por correo si sale desbloqueada</label>
       <button class="btn main" id="pok">Subir video</button>
     </div>
     <div class="bar" id="bar"><div id="fill"></div></div>
@@ -44,7 +46,8 @@
   <p class="nota" id="nota"></p>
 
   <section id="home">
-    <div class="grid" id="grid"></div>
+    <button class="btn main" id="continuar" hidden></button>
+    <div id="grid"></div>
     <p class="vacio" id="vacio" hidden>No se encontraron clases.</p>
     <div class="footer"><button class="btn" id="salir" style="display:none">Salir</button><button class="btn" id="admin">Acceso profesor</button></div>
   </section>
@@ -86,6 +89,6 @@
   </div>
 </div>
 
-<script src="app.js?v=3"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>
