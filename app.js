@@ -221,6 +221,18 @@
           cargar();
         };
         info.appendChild(b);
+        const del = document.createElement("button");
+        del.className = "btn lockbtn delbtn";
+        del.textContent = "Eliminar";
+        del.onclick = async e => {
+          e.stopPropagation();
+          if (!confirm("¿Eliminar «" + c.titulo + "»?\n\nSe enviará a la papelera de tu Drive y podrás recuperarla durante 30 días.")) return;
+          del.disabled = true;
+          const r = await post({ action: "borrar", id: c.id });
+          if (r.error) { alert(r.error); del.disabled = false; return; }
+          cargar();
+        };
+        info.appendChild(del);
       }
       card.appendChild(info);
       card.onclick = () => ver(i);

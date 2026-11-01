@@ -116,3 +116,6 @@
   .modulo { margin-bottom:40px; }
   .modulo h2 { font-family:Syne,sans-serif; font-size:1.3rem; margin-bottom:16px; padding-left:12px; border-left:4px solid var(--accent); }
   #pmod { background:#050a16; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font:inherit; }
+
+  .delbtn { margin-left:8px; border-color:#7a2a2a; color:#ff9a9a; }
+  .delbtn:hover { border-color:#ff6b6b; }
