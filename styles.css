@@ -136,3 +136,7 @@
   .pdfbar h2 { font-family:Syne,sans-serif; font-size:1.05rem; }
   .pdfbar a { text-decoration:none; display:inline-block; margin-right:8px; }
   #pdfframe { flex:1; width:100%; border:0; border-radius:12px; background:#fff; }
+
+  /* Títulos de los videos: letra tipo Calibri (Carlito es su equivalente en la web), mismo tamaño */
+  .info h3, #wtitle, .item h4, .pdfrow span { font-family:Calibri, Carlito, "Segoe UI", Arial, sans-serif; }
+  .info h3, #wtitle { font-weight:700; }

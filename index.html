@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=9">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body>
 
@@ -17,15 +17,15 @@
 
 <main>
   <div class="panel" id="panel">
-    <h2>Subir una clase nueva</h2>
-    <p class="hint">Solo tú ves este panel. El video se guarda en tu carpeta de Drive y aparece para todos.</p>
+    <h2>Subir una clase o un PDF</h2>
+    <p class="hint">Solo tú ves este panel. El archivo (video o PDF) se guarda en la carpeta que elijas y aparece para todos.</p>
     <div class="row">
-      <input type="text" id="ptitulo" placeholder="Título de la clase">
+      <input type="text" id="ptitulo" placeholder="Título (de la clase o del PDF)">
       <select id="pmod" aria-label="Módulo"></select>
       <input type="file" id="parchivo" accept="video/*,application/pdf" style="color:var(--muted);max-width:100%">
       <label><input type="checkbox" id="pbloq" checked> Subir bloqueada</label>
       <label><input type="checkbox" id="pavisar" checked> Avisar por correo si sale desbloqueada</label>
-      <button class="btn main" id="pok">Subir video</button>
+      <button class="btn main" id="pok">Subir archivo</button>
     </div>
     <div class="bar" id="bar"><div id="fill"></div></div>
     <p id="pmsg"></p>
@@ -102,6 +102,6 @@
   </div>
 </div>
 
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
