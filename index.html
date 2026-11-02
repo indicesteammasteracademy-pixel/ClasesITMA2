@@ -6,7 +6,7 @@
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
     <div class="row">
       <input type="text" id="ptitulo" placeholder="Título de la clase">
       <select id="pmod" aria-label="Módulo"></select>
-      <input type="file" id="parchivo" accept="video/*" style="color:var(--muted);max-width:100%">
+      <input type="file" id="parchivo" accept="video/*,application/pdf" style="color:var(--muted);max-width:100%">
       <label><input type="checkbox" id="pbloq" checked> Subir bloqueada</label>
       <label><input type="checkbox" id="pavisar" checked> Avisar por correo si sale desbloqueada</label>
       <button class="btn main" id="pok">Subir video</button>
@@ -43,9 +43,11 @@
     <div id="alista"></div>
   </div>
 
+
   <p class="nota" id="nota"></p>
 
   <section id="home">
+    <nav class="tabs" id="tabs"></nav>
     <button class="btn main" id="continuar" hidden></button>
     <div id="grid"></div>
     <p class="vacio" id="vacio" hidden>No se encontraron clases.</p>
@@ -61,6 +63,7 @@
     </div>
     <aside id="side"><h3>Más clases</h3><div id="list"></div></aside>
   </section>
+
 </main>
 
 <div class="login" id="login">
@@ -89,6 +92,16 @@
   </div>
 </div>
 
-<script src="app.js?v=7"></script>
+<div class="pdfmodal" id="pdfmodal">
+  <div class="pdfbox">
+    <div class="pdfbar">
+      <h2 id="pdftitle"></h2>
+      <div><a class="btn" id="pdfopen" target="_blank" rel="noopener">Abrir en Drive</a><button class="btn" id="pdfclose">Cerrar</button></div>
+    </div>
+    <iframe id="pdfframe" title="PDF"></iframe>
+  </div>
+</div>
+
+<script src="app.js?v=9"></script>
 </body>
 </html>

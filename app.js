@@ -17,6 +17,11 @@
   let alumno = null; // {email, code} del alumno que entró
   let vistos = new Set(); // IDs de las clases que el alumno ya vio
   let modulos = ["Clases"]; // nombres de los módulos (carpetas de Drive)
+  let modAreas = [0];       // a qué área pertenece cada módulo
+  let areas = ["Clases"];   // nombres de las áreas (pestañas)
+  let areaActual = 0;
+  let materiales = [];      // PDFs
+  try { areaActual = Number(localStorage.getItem("itma_area")) || 0; } catch (e) {}
   try { alumno = JSON.parse(localStorage.getItem("itma_alumno") || "null"); } catch (e) {}
   try { clave = localStorage.getItem("itma_clave") || ""; } catch (e) {}
 
@@ -82,7 +87,13 @@
       const lista = Array.isArray(r) ? r : r.clases;
       vistos = new Set(Array.isArray(r) ? [] : (r.vistos || []));
       modulos = (!Array.isArray(r) && r.modulos && r.modulos.length) ? r.modulos : ["Clases"];
-      clases = lista.map(x => ({ titulo: x.title, id: x.id, locked: x.locked, mod: x.mod || 0 }));
+      areas = (!Array.isArray(r) && r.areas && r.areas.length) ? r.areas : ["Clases"];
+      modAreas = (!Array.isArray(r) && r.modAreas) ? r.modAreas : modulos.map(() => 0);
+      if (areaActual >= areas.length) areaActual = 0;
+      clases = lista.filter(x => x.tipo !== "pdf")
+        .map(x => ({ titulo: x.title, id: x.id, locked: x.locked, mod: x.mod || 0 }));
+      materiales = lista.filter(x => x.tipo === "pdf")
+        .map(x => ({ titulo: x.title, id: x.id, locked: x.locked, mod: x.mod || 0, tipo: "pdf" }));
       fillModulos();
       $("nota").textContent = "";
       ocultarLogin();
@@ -168,79 +179,148 @@
     modulos.forEach((m, k) => {
       const o = document.createElement("option");
       o.value = k;
-      o.textContent = m;
+      o.textContent = (areas.length > 1 && modAreas[k] !== undefined ? areas[modAreas[k]] + " · " : "") + m;
       s.appendChild(o);
     });
     if (actual) s.value = actual;
     s.style.display = modulos.length > 1 ? "" : "none";
   }
 
+  function dibujarTabs() {
+    const t = $("tabs");
+    t.innerHTML = "";
+    if (areas.length < 2 || $("q").value.trim()) { t.style.display = "none"; return; }
+    t.style.display = "";
+    areas.forEach((n, k) => {
+      const b = document.createElement("button");
+      b.className = "tab" + (k === areaActual ? " activa" : "");
+      b.textContent = n;
+      b.onclick = () => {
+        areaActual = k;
+        try { localStorage.setItem("itma_area", String(k)); } catch (e) {}
+        dibujar();
+      };
+      t.appendChild(b);
+    });
+  }
+
+  // Botones Bloquear / Eliminar (solo profesor)
+  function botonesAdmin(c, parent) {
+    const b = document.createElement("button");
+    b.className = "btn lockbtn";
+    b.textContent = c.locked ? "Desbloquear" : "Bloquear";
+    b.onclick = async e => {
+      e.stopPropagation();
+      const avisar = c.locked && c.tipo !== "pdf" && confirm("¿Avisar por correo a todos los alumnos que esta clase ya está disponible?");
+      b.disabled = true;
+      const r = await post({ action: "lock", id: c.id, locked: !c.locked, avisar });
+      if (r.aviso) alert("Aviso enviado a " + r.aviso.enviados + " de " + r.aviso.total + " alumnos.");
+      cargar();
+    };
+    parent.appendChild(b);
+    const del = document.createElement("button");
+    del.className = "btn lockbtn delbtn";
+    del.textContent = "Eliminar";
+    del.onclick = async e => {
+      e.stopPropagation();
+      if (!confirm("¿Eliminar «" + c.titulo + "»?\n\nSe enviará a la papelera de tu Drive y podrás recuperarla durante 30 días.")) return;
+      del.disabled = true;
+      const r = await post({ action: "borrar", id: c.id });
+      if (r.error) { alert(r.error); del.disabled = false; return; }
+      cargar();
+    };
+    parent.appendChild(del);
+  }
+
+  function tarjetaClase(c, i) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.appendChild(miniatura(c));
+    const info = document.createElement("div");
+    info.className = "info";
+    info.innerHTML = "<h3></h3><p></p>";
+    info.querySelector("h3").textContent = c.titulo;
+    info.querySelector("p").textContent = "Clase " + num(i);
+    if (clave) botonesAdmin(c, info);
+    card.appendChild(info);
+    card.onclick = () => ver(i);
+    card.onkeydown = e => { if (e.key === "Enter") ver(i); };
+    return card;
+  }
+
   function dibujar() {
     const q = $("q").value.trim().toLowerCase();
     const grid = $("grid");
     grid.innerHTML = "";
-    const lista = clases.map((c, i) => ({ c, i })).filter(x => !q || x.c.titulo.toLowerCase().includes(q));
-    $("vacio").hidden = lista.length > 0;
-    const secciones = {};
-    lista.forEach(({ c, i }) => {
-      let sec = secciones[c.mod];
-      if (!sec) {
-        const w = document.createElement("section");
-        w.className = "modulo";
-        if (modulos.length > 1) {
-          const h = document.createElement("h2");
-          h.textContent = modulos[c.mod] || "Clases";
-          w.appendChild(h);
-        }
-        sec = document.createElement("div");
-        sec.className = "grid";
-        w.appendChild(sec);
-        grid.appendChild(w);
-        secciones[c.mod] = sec;
+    dibujarTabs();
+    const coincide = x => !q || x.titulo.toLowerCase().includes(q);
+    const enArea = k => q || modAreas[k] === areaActual;
+    const modsArea = modulos.filter((m, k) => enArea(k)).length;
+    let hay = false;
+    modulos.forEach((nombre, k) => {
+      if (!enArea(k)) return;
+      const vids = clases.map((c, i) => ({ c, i })).filter(x => x.c.mod === k && coincide(x.c));
+      const pdfs = materiales.filter(p => p.mod === k && coincide(p));
+      if (!vids.length && !pdfs.length) return;
+      hay = true;
+      const w = document.createElement("section");
+      w.className = "modulo";
+      if (modsArea > 1) {
+        const h = document.createElement("h2");
+        h.textContent = (q && areas.length > 1 ? areas[modAreas[k]] + " · " : "") + nombre;
+        w.appendChild(h);
       }
-      const card = document.createElement("div");
-      card.className = "card";
-      card.tabIndex = 0;
-      card.setAttribute("role", "button");
-      card.appendChild(miniatura(c));
-      const info = document.createElement("div");
-      info.className = "info";
-      info.innerHTML = "<h3></h3><p></p>";
-      info.querySelector("h3").textContent = c.titulo;
-      info.querySelector("p").textContent = "Clase " + num(i);
-      if (clave) {
-        const b = document.createElement("button");
-        b.className = "btn lockbtn";
-        b.textContent = c.locked ? "Desbloquear" : "Bloquear";
-        b.onclick = async e => {
-          e.stopPropagation();
-          const avisar = c.locked && confirm("¿Avisar por correo a todos los alumnos que esta clase ya está disponible?");
-          b.disabled = true;
-          const r = await post({ action: "lock", id: c.id, locked: !c.locked, avisar });
-          if (r.aviso) alert("Aviso enviado a " + r.aviso.enviados + " de " + r.aviso.total + " alumnos.");
-          cargar();
-        };
-        info.appendChild(b);
-        const del = document.createElement("button");
-        del.className = "btn lockbtn delbtn";
-        del.textContent = "Eliminar";
-        del.onclick = async e => {
-          e.stopPropagation();
-          if (!confirm("¿Eliminar «" + c.titulo + "»?\n\nSe enviará a la papelera de tu Drive y podrás recuperarla durante 30 días.")) return;
-          del.disabled = true;
-          const r = await post({ action: "borrar", id: c.id });
-          if (r.error) { alert(r.error); del.disabled = false; return; }
-          cargar();
-        };
-        info.appendChild(del);
+      if (vids.length) {
+        const g = document.createElement("div");
+        g.className = "grid";
+        vids.forEach(({ c, i }) => g.appendChild(tarjetaClase(c, i)));
+        w.appendChild(g);
       }
-      card.appendChild(info);
-      card.onclick = () => ver(i);
-      card.onkeydown = e => { if (e.key === "Enter") ver(i); };
-      sec.appendChild(card);
+      if (pdfs.length) {
+        const m = document.createElement("div");
+        m.className = "material";
+        m.innerHTML = "<h3>📄 Material en PDF</h3>";
+        pdfs.forEach(p => {
+          const row = document.createElement("div");
+          row.className = "pdfrow";
+          row.tabIndex = 0;
+          const t = document.createElement("span");
+          t.textContent = (p.locked ? "🔒 " : "📄 ") + p.titulo;
+          row.appendChild(t);
+          if (clave) {
+            const acc = document.createElement("div");
+            botonesAdmin(p, acc);
+            row.appendChild(acc);
+          }
+          row.onclick = () => abrirPDF(p);
+          row.onkeydown = e => { if (e.key === "Enter") abrirPDF(p); };
+          m.appendChild(row);
+        });
+        w.appendChild(m);
+      }
+      grid.appendChild(w);
     });
+    $("vacio").hidden = hay;
     actualizarContinuar();
   }
+
+  // ---------- Visor de PDF ----------
+  function abrirPDF(p) {
+    if (p.locked && !clave) { alert("Este material está bloqueado por ahora."); return; }
+    $("pdftitle").textContent = p.titulo;
+    $("pdfframe").src = "https://drive.google.com/file/d/" + p.id + "/preview";
+    $("pdfopen").href = "https://drive.google.com/file/d/" + p.id + "/view";
+    $("pdfmodal").classList.add("open");
+  }
+  function cerrarPDF() {
+    $("pdfmodal").classList.remove("open");
+    $("pdfframe").src = "about:blank";
+  }
+  $("pdfclose").onclick = cerrarPDF;
+  $("pdfmodal").addEventListener("click", e => { if (e.target === $("pdfmodal")) cerrarPDF(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarPDF(); });
 
   // ---------- Clases vistas / continuar ----------
   function marcarVisto(c) {
@@ -252,8 +332,9 @@
   function actualizarContinuar() {
     const b = $("continuar");
     if (clave || !alumno) { b.hidden = true; return; }
-    const disp = clases.filter(c => c.id && !c.locked).length;
-    const i = clases.findIndex(c => c.id && !c.locked && !vistos.has(c.id));
+    const enA = c => modAreas[c.mod] === areaActual;
+    const disp = clases.filter(c => c.id && !c.locked && enA(c)).length;
+    const i = clases.findIndex(c => c.id && !c.locked && enA(c) && !vistos.has(c.id));
     if (!disp) { b.hidden = true; return; }
     b.hidden = false;
     if (i === -1) {
@@ -410,5 +491,6 @@
     };
     xhr.send(file);
   };
+
 
   cargar();
