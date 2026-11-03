@@ -59,7 +59,8 @@
   function actualizarQuien() {
     const q = $("quien");
     const nombre = clave ? "Profesor" : (alumno ? (alumno.nombre || alumno.email) : "");
-    q.textContent = nombre ? "👤 " + nombre : "";
+    q.textContent = nombre ? "👤 " + nombre + (clave ? "" : "  ✎") : "";
+    q.disabled = !!clave;
     q.style.display = nombre ? "" : "none";
   }
 
@@ -564,5 +565,51 @@
     xhr.send(file);
   };
 
+
+
+  // ---------- Mis datos (el alumno cambia su nombre y su código; el correo no) ----------
+  function abrirPerfil() {
+    if (clave || !alumno) return;
+    const partes = (alumno.nombre || "").split(" ");
+    $("pf-nombre").value = partes.shift() || "";
+    $("pf-apellido").value = partes.join(" ");
+    $("pf-email").textContent = alumno.email;
+    $("pf-code").value = "";
+    $("pf-code2").value = "";
+    $("pf-msg").textContent = "";
+    $("perfil").classList.add("open");
+  }
+  function cerrarPerfil() { $("perfil").classList.remove("open"); }
+  $("quien").onclick = abrirPerfil;
+  $("pf-no").onclick = cerrarPerfil;
+  $("perfil").addEventListener("click", e => { if (e.target === $("perfil")) cerrarPerfil(); });
+  $("pf-ok").onclick = async () => {
+    const msg = $("pf-msg");
+    const nombre = $("pf-nombre").value.trim();
+    const apellido = $("pf-apellido").value.trim();
+    const c1 = $("pf-code").value.trim();
+    const c2 = $("pf-code2").value.trim();
+    if (!nombre || !apellido) { msg.textContent = "Escribe tu nombre y apellido."; return; }
+    if (c1 || c2) {
+      if (c1 !== c2) { msg.textContent = "Los dos códigos no coinciden."; return; }
+      if (c1.length < 4) { msg.textContent = "El código debe tener al menos 4 caracteres."; return; }
+    }
+    $("pf-ok").disabled = true;
+    msg.textContent = "Guardando…";
+    try {
+      const r = await post({ action: "perfilEdit", email: alumno.email, code: alumno.code, nombre, apellido, nuevoCode: c1 });
+      if (r.error) { msg.textContent = r.error; return; }
+      alumno.nombre = r.nombre;
+      if (c1) alumno.code = c1;
+      try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
+      actualizarQuien();
+      msg.textContent = "¡Datos actualizados!";
+      setTimeout(cerrarPerfil, 900);
+    } catch (e) {
+      msg.textContent = "No se pudo guardar. Revisa tu internet.";
+    } finally {
+      $("pf-ok").disabled = false;
+    }
+  };
 
   cargar();

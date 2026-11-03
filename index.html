@@ -6,7 +6,7 @@
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=12">
+<link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
   <h1>Clases</h1>
   <input id="q" type="search" placeholder="Buscar clases…">
   <div class="acc">
-    <span id="quien" style="display:none"></span>
+    <button type="button" id="quien" class="quienbtn" style="display:none" title="Mis datos"></button>
     <button class="btn peq" id="salir" style="display:none">Salir</button>
     <button class="btn peq" id="admin">Acceso profesor</button>
   </div>
@@ -99,6 +99,22 @@
   </div>
 </div>
 
+<div class="pmodal" id="perfil">
+  <div class="pbox">
+    <h2>Mis datos</h2>
+    <p class="mail">Correo: <b id="pf-email"></b> <small>(no se puede cambiar)</small></p>
+    <input type="text" id="pf-nombre" placeholder="Nombre" autocomplete="given-name">
+    <input type="text" id="pf-apellido" placeholder="Apellido" autocomplete="family-name">
+    <input type="password" id="pf-code" placeholder="Nuevo código (déjalo vacío para no cambiarlo)" autocomplete="new-password">
+    <input type="password" id="pf-code2" placeholder="Repite el nuevo código" autocomplete="new-password">
+    <p id="pf-msg"></p>
+    <div class="prow">
+      <button class="btn main" id="pf-ok">Guardar</button>
+      <button class="btn" id="pf-no">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="pdfmodal" id="pdfmodal">
   <div class="pdfbox">
     <div class="pdfbar">
@@ -109,6 +125,6 @@
   </div>
 </div>
 
-<script src="app.js?v=12"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>

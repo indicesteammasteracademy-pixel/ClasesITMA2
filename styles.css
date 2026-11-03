@@ -154,3 +154,17 @@
   .edit input[type=text]:focus { outline:none; border-color:var(--accent); }
   .chk { color:var(--muted); display:flex; gap:6px; align-items:center; font-size:.9rem; }
   .e-msg { width:100%; color:var(--muted); font-size:.88rem; margin:0; }
+
+  .quienbtn { background:none; border:0; font:inherit; font-size:.92rem; cursor:pointer; padding:6px 10px; border-radius:8px; }
+  .quienbtn:hover:not(:disabled) { background:var(--card); }
+  .quienbtn:disabled { cursor:default; color:var(--text); }
+  .pmodal { position:fixed; inset:0; background:rgba(2,5,14,.88); display:none; place-items:center; z-index:45; padding:20px; }
+  .pmodal.open { display:grid; }
+  .pbox { width:min(440px,100%); background:var(--card); border:1px solid var(--line); border-radius:18px; padding:24px; display:flex; flex-direction:column; gap:10px; }
+  .pbox h2 { font-family:Syne,sans-serif; font-size:1.2rem; }
+  .pbox .mail { color:var(--muted); font-size:.92rem; word-break:break-all; }
+  .pbox .mail b { color:var(--text); }
+  .pbox input { background:#050a16; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:12px; font:inherit; }
+  .pbox input:focus { outline:none; border-color:var(--accent); }
+  #pf-msg { color:var(--muted); font-size:.9rem; min-height:1.2em; margin:0; }
+  .prow { display:flex; gap:10px; }
