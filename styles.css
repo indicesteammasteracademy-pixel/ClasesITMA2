@@ -140,3 +140,9 @@
   /* Títulos de los videos: letra tipo Calibri (Carlito es su equivalente en la web), mismo tamaño */
   .info h3, #wtitle, .item h4, .pdfrow span { font-family:Calibri, Carlito, "Segoe UI", Arial, sans-serif; }
   .info h3, #wtitle { font-weight:700; }
+
+  header { flex-wrap:wrap; }
+  .acc { display:flex; gap:8px; align-items:center; margin-left:auto; }
+  .btn.peq { padding:7px 13px; font-size:.88rem; }
+  #quien { color:var(--text); font-size:.92rem; white-space:nowrap; max-width:200px; overflow:hidden; text-overflow:ellipsis; }
+  @media (max-width:600px) { #q { flex:1 1 100%; max-width:none; margin:0; order:3; } .acc { flex-wrap:wrap; justify-content:flex-end; } }

@@ -6,13 +6,18 @@
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
 
 <header>
   <h1>Clases</h1>
   <input id="q" type="search" placeholder="Buscar clases…">
+  <div class="acc">
+    <span id="quien" style="display:none"></span>
+    <button class="btn peq" id="salir" style="display:none">Salir</button>
+    <button class="btn peq" id="admin">Acceso profesor</button>
+  </div>
 </header>
 
 <main>
@@ -35,6 +40,8 @@
     <h2>Alumnos registrados</h2>
     <p class="hint">Solo ellos pueden entrar. Agrega su correo; si dejas el código vacío, se crea uno solo. Pásale el código al alumno.</p>
     <div class="row">
+      <input type="text" id="anombre" placeholder="Nombre" autocomplete="off">
+      <input type="text" id="aapellido" placeholder="Apellido" autocomplete="off">
       <input type="text" id="aemail" placeholder="correo del alumno" autocapitalize="none">
       <input type="text" id="acode" placeholder="código (opcional)" autocapitalize="none">
       <button class="btn main" id="aok">Agregar alumno</button>
@@ -51,7 +58,7 @@
     <button class="btn main" id="continuar" hidden></button>
     <div id="grid"></div>
     <p class="vacio" id="vacio" hidden>No se encontraron clases.</p>
-    <div class="footer"><button class="btn" id="salir" style="display:none">Salir</button><button class="btn" id="admin">Acceso profesor</button></div>
+    
   </section>
 
   <section id="watch">
@@ -102,6 +109,6 @@
   </div>
 </div>
 
-<script src="app.js?v=10"></script>
+<script src="app.js?v=11"></script>
 </body>
 </html>

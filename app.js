@@ -56,6 +56,13 @@
     l.classList.add("saliendo");
     tOcultar = setTimeout(() => l.classList.remove("show", "saliendo"), 450);
   }
+  function actualizarQuien() {
+    const q = $("quien");
+    const nombre = clave ? "Profesor" : (alumno ? (alumno.nombre || alumno.email) : "");
+    q.textContent = nombre ? "👤 " + nombre : "";
+    q.style.display = nombre ? "" : "none";
+  }
+
   function cerrarSesion(msg) {
     alumno = null;
     clave = "";
@@ -65,6 +72,7 @@
     $("admin").style.display = "inline-block";
     $("panel").classList.remove("show");
     $("panelAlumnos").classList.remove("show");
+    actualizarQuien();
     dibujar();
     mostrarLogin(msg);
   }
@@ -86,6 +94,10 @@
       if (r.error) { cerrarSesion(r.error); return; }
       const lista = Array.isArray(r) ? r : r.clases;
       vistos = new Set(Array.isArray(r) ? [] : (r.vistos || []));
+      if (!clave && alumno && !Array.isArray(r) && r.nombre !== undefined) {
+        alumno.nombre = r.nombre || "";
+        try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
+      }
       modulos = (!Array.isArray(r) && r.modulos && r.modulos.length) ? r.modulos : ["Clases"];
       areas = (!Array.isArray(r) && r.areas && r.areas.length) ? r.areas : ["Clases"];
       modAreas = (!Array.isArray(r) && r.modAreas) ? r.modAreas : modulos.map(() => 0);
@@ -98,6 +110,7 @@
       $("nota").textContent = "";
       ocultarLogin();
       $("salir").style.display = "inline-block";
+      actualizarQuien();
       if (clave) {
         $("panel").classList.add("show");
         $("panelAlumnos").classList.add("show");
@@ -423,7 +436,7 @@
       const row = document.createElement("div");
       row.className = "al";
       const t = document.createElement("span");
-      t.textContent = a.email + "  ·  código: ";
+      t.textContent = (a.nombre ? a.nombre + "  ·  " : "") + a.email + "  ·  código: ";
       const c = document.createElement("code");
       c.textContent = a.code;
       t.appendChild(c);
@@ -442,14 +455,16 @@
   }
 
   $("aok").onclick = async () => {
+    const nombre = $("anombre").value.trim();
+    const apellido = $("aapellido").value.trim();
     const email = $("aemail").value.trim();
-    if (!email) { $("amsg").textContent = "Escribe el correo del alumno."; return; }
+    if (!nombre || !apellido || !email) { $("amsg").textContent = "Escribe el nombre, el apellido y el correo del alumno."; return; }
     $("aok").disabled = true;
-    const r = await post({ action: "alumnoAdd", email, code: $("acode").value.trim() });
+    const r = await post({ action: "alumnoAdd", nombre, apellido, email, code: $("acode").value.trim() });
     $("aok").disabled = false;
     if (r.error) { $("amsg").textContent = r.error; return; }
-    $("amsg").textContent = "Agregado: " + r.email + " · código " + r.code + (r.enviado ? " · correo enviado" : " · no se pudo enviar el correo, pásale el código tú");
-    $("aemail").value = ""; $("acode").value = "";
+    $("amsg").textContent = "Agregado: " + r.nombre + " (" + r.email + ") · código " + r.code + (r.enviado ? " · correo enviado" : " · no se pudo enviar el correo, pásale el código tú");
+    $("anombre").value = ""; $("aapellido").value = ""; $("aemail").value = ""; $("acode").value = "";
     cargarAlumnos();
   };
 
