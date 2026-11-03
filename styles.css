@@ -146,3 +146,11 @@
   .btn.peq { padding:7px 13px; font-size:.88rem; }
   #quien { color:var(--text); font-size:.92rem; white-space:nowrap; max-width:200px; overflow:hidden; text-overflow:ellipsis; }
   @media (max-width:600px) { #q { flex:1 1 100%; max-width:none; margin:0; order:3; } .acc { flex-wrap:wrap; justify-content:flex-end; } }
+
+  .acc2 { display:flex; gap:8px; }
+  .edit { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:4px 0 16px; }
+  .edit[hidden] { display:none; }
+  .edit input[type=text] { flex:1 1 150px; background:#050a16; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:9px 12px; font:inherit; }
+  .edit input[type=text]:focus { outline:none; border-color:var(--accent); }
+  .chk { color:var(--muted); display:flex; gap:6px; align-items:center; font-size:.9rem; }
+  .e-msg { width:100%; color:var(--muted); font-size:.88rem; margin:0; }

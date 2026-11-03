@@ -433,6 +433,8 @@
     if (r.error) { $("amsg").textContent = r.error; return; }
     if (!r.length) { box.innerHTML = '<p class="hint" style="color:var(--muted);margin-top:10px">Aún no hay alumnos registrados.</p>'; return; }
     r.forEach(a => {
+      const wrap = document.createElement("div");
+      wrap.className = "alw";
       const row = document.createElement("div");
       row.className = "al";
       const t = document.createElement("span");
@@ -440,6 +442,11 @@
       const c = document.createElement("code");
       c.textContent = a.code;
       t.appendChild(c);
+      const acc = document.createElement("div");
+      acc.className = "acc2";
+      const ed = document.createElement("button");
+      ed.className = "btn small";
+      ed.textContent = "Editar";
       const b = document.createElement("button");
       b.className = "btn small";
       b.textContent = "Quitar";
@@ -448,10 +455,60 @@
         await post({ action: "alumnoDel", email: a.email });
         cargarAlumnos();
       };
+      const form = formEditar(a);
+      ed.onclick = () => { form.hidden = !form.hidden; };
+      acc.appendChild(ed);
+      acc.appendChild(b);
       row.appendChild(t);
-      row.appendChild(b);
-      box.appendChild(row);
+      row.appendChild(acc);
+      wrap.appendChild(row);
+      wrap.appendChild(form);
+      box.appendChild(wrap);
     });
+  }
+
+  // Formulario para editar nombre, apellido, correo y código de un alumno
+  function formEditar(a) {
+    const f = document.createElement("div");
+    f.className = "edit";
+    f.hidden = true;
+    f.innerHTML = '<input type="text" class="e-nombre" placeholder="Nombre">' +
+      '<input type="text" class="e-apellido" placeholder="Apellido">' +
+      '<input type="text" class="e-email" placeholder="Correo" autocapitalize="none">' +
+      '<input type="text" class="e-code" placeholder="Código de acceso" autocapitalize="none">' +
+      '<label class="chk"><input type="checkbox" class="e-avisar" checked> Avisar por correo</label>' +
+      '<button class="btn main small e-ok">Guardar cambios</button>' +
+      '<button class="btn small e-no">Cancelar</button>' +
+      '<p class="e-msg"></p>';
+    const partes = (a.nombre || "").split(" ");
+    f.querySelector(".e-nombre").value = partes.shift() || "";
+    f.querySelector(".e-apellido").value = partes.join(" ");
+    f.querySelector(".e-email").value = a.email;
+    f.querySelector(".e-code").value = a.code;
+    f.querySelector(".e-no").onclick = () => { f.hidden = true; };
+    f.querySelector(".e-ok").onclick = async () => {
+      const ok = f.querySelector(".e-ok");
+      const msg = f.querySelector(".e-msg");
+      const email = f.querySelector(".e-email").value.trim();
+      if (!email) { msg.textContent = "El correo no puede quedar vacío."; return; }
+      ok.disabled = true;
+      msg.textContent = "Guardando…";
+      const r = await post({
+        action: "alumnoEdit",
+        oldEmail: a.email,
+        email: email,
+        nombre: f.querySelector(".e-nombre").value.trim(),
+        apellido: f.querySelector(".e-apellido").value.trim(),
+        code: f.querySelector(".e-code").value.trim(),
+        avisar: f.querySelector(".e-avisar").checked
+      });
+      ok.disabled = false;
+      if (r.error) { msg.textContent = r.error; return; }
+      $("amsg").textContent = "Actualizado: " + (r.nombre ? r.nombre + " · " : "") + r.email + " · código " + r.code +
+        (r.enviado === true ? " · correo enviado" : r.enviado === false ? " · no se pudo enviar el correo" : "");
+      cargarAlumnos();
+    };
+    return f;
   }
 
   $("aok").onclick = async () => {
