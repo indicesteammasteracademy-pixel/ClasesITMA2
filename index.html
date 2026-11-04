@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>try{var t=localStorage.getItem("itma_tema");if(t)document.documentElement.setAttribute("data-tema",t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=13">
+<link rel="stylesheet" href="styles.css?v=14">
 </head>
 <body>
 
@@ -14,6 +15,7 @@
   <h1>Clases</h1>
   <input id="q" type="search" placeholder="Buscar clases…">
   <div class="acc">
+    <button class="btn peq" id="tema" title="Cambiar tema" aria-label="Cambiar entre tema claro y oscuro">☀️</button>
     <button type="button" id="quien" class="quienbtn" style="display:none" title="Mis datos"></button>
     <button class="btn peq" id="salir" style="display:none">Salir</button>
     <button class="btn peq" id="admin">Acceso profesor</button>
@@ -125,6 +127,6 @@
   </div>
 </div>
 
-<script src="app.js?v=13"></script>
+<script src="app.js?v=14"></script>
 </body>
 </html>

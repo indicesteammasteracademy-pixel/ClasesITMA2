@@ -612,4 +612,18 @@
     }
   };
 
+
+  // ---------- Tema claro / oscuro (se recuerda en este dispositivo) ----------
+  function pintarTema(t) {
+    document.documentElement.setAttribute("data-tema", t);
+    $("tema").textContent = t === "light" ? "🌙" : "☀️";
+    $("tema").title = t === "light" ? "Cambiar a tema oscuro" : "Cambiar a tema claro";
+  }
+  pintarTema(document.documentElement.getAttribute("data-tema") === "light" ? "light" : "dark");
+  $("tema").onclick = () => {
+    const nuevo = document.documentElement.getAttribute("data-tema") === "light" ? "dark" : "light";
+    pintarTema(nuevo);
+    try { localStorage.setItem("itma_tema", nuevo); } catch (e) {}
+  };
+
   cargar();
