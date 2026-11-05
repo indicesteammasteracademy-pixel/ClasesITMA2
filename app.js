@@ -15,6 +15,7 @@
   let clases = [];
   let clave = "";   // solo en memoria; el servidor es quien verifica la clave
   let alumno = null; // {email, code} del alumno que entró
+  let adminRol = false; // el alumno que entró es administrador
   let vistos = new Set(); // IDs de las clases que el alumno ya vio
   let modulos = ["Clases"]; // nombres de los módulos (carpetas de Drive)
   let modAreas = [0];       // a qué área pertenece cada módulo
@@ -71,6 +72,7 @@
 
   function cerrarSesion(msg) {
     alumno = null;
+    adminRol = false;
     clave = "";
     try { localStorage.removeItem("itma_alumno"); localStorage.removeItem("itma_clave"); } catch (e) {}
     clases = [];
@@ -104,7 +106,7 @@
         alumno.nombre = r.nombre || "";
         try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
       }
-      if (!clave && alumno && !Array.isArray(r) && r.admin) { clave = "@rol"; return cargar(); }
+      if (!Array.isArray(r) && r.admin !== undefined) adminRol = !!r.admin;
       modulos = (!Array.isArray(r) && r.modulos && r.modulos.length) ? r.modulos : ["Clases"];
       areas = (!Array.isArray(r) && r.areas && r.areas.length) ? r.areas : ["Clases"];
       modAreas = (!Array.isArray(r) && r.modAreas) ? r.modAreas : modulos.map(() => 0);
@@ -121,10 +123,12 @@
       if (clave) {
         $("panel").classList.add("show");
         $("panelAlumnos").classList.add("show");
-        $("admin").style.display = "none";
-        $("aadminwrap").style.display = clave === "@rol" ? "none" : "";
         cargarAlumnos();
+      } else {
+        $("panel").classList.remove("show");
+        $("panelAlumnos").classList.remove("show");
       }
+      ajustarAdminBtn();
     } catch (e) {
       clases = [];
       $("nota").textContent = "No se pudo conectar con Drive (" + e.message + ").";
@@ -416,6 +420,12 @@
 
   // ---------- Acceso profesor (la clave la verifica el servidor) ----------
   $("admin").onclick = async () => {
+    // Un alumno nombrado administrador entra y sale del modo profesor sin clave
+    if (adminRol && alumno) {
+      clave = clave === "@rol" ? "" : "@rol";
+      cargar();
+      return;
+    }
     if (!hayAPI()) { alert("Primero conecta la página con tu Apps Script (variable API)."); return; }
     const k = prompt("Clave de profesor:");
     if (!k) return;
@@ -472,6 +482,21 @@
       const form = formEditar(a);
       ed.onclick = () => { form.hidden = !form.hidden; };
       acc.appendChild(ed);
+      if (clave !== "@rol") {
+        const ad = document.createElement("button");
+        ad.className = "btn small";
+        ad.textContent = a.admin ? "Quitar admin" : "Hacer admin";
+        ad.onclick = async () => {
+          const txt = a.admin
+            ? "¿Quitar el rol de administrador a " + a.email + "?"
+            : "¿Hacer administrador a " + a.email + "?\n\nPodrá subir, bloquear, eliminar y registrar alumnos.";
+          if (!confirm(txt)) return;
+          const r = await post({ action: "adminSet", email: a.email, admin: !a.admin });
+          if (r.error) { alert(r.error); return; }
+          cargarAlumnos();
+        };
+        acc.appendChild(ad);
+      }
       acc.appendChild(b);
       row.appendChild(t);
       row.appendChild(acc);
@@ -490,7 +515,6 @@
       '<input type="text" class="e-apellido" placeholder="Apellido">' +
       '<input type="text" class="e-email" placeholder="Correo" autocapitalize="none">' +
       '<input type="text" class="e-code" placeholder="Código de acceso" autocapitalize="none">' +
-      (clave === "@rol" ? "" : '<label class="chk"><input type="checkbox" class="e-admin"> Administrador</label>') +
       '<label class="chk"><input type="checkbox" class="e-avisar" checked> Avisar por correo</label>' +
       '<button class="btn main small e-ok">Guardar cambios</button>' +
       '<button class="btn small e-no">Cancelar</button>' +
@@ -500,8 +524,6 @@
     f.querySelector(".e-apellido").value = partes.join(" ");
     f.querySelector(".e-email").value = a.email;
     f.querySelector(".e-code").value = a.code;
-    const ea = f.querySelector(".e-admin");
-    if (ea) ea.checked = !!a.admin;
     f.querySelector(".e-no").onclick = () => { f.hidden = true; };
     f.querySelector(".e-ok").onclick = async () => {
       const ok = f.querySelector(".e-ok");
@@ -517,8 +539,7 @@
         nombre: f.querySelector(".e-nombre").value.trim(),
         apellido: f.querySelector(".e-apellido").value.trim(),
         code: f.querySelector(".e-code").value.trim(),
-        avisar: f.querySelector(".e-avisar").checked,
-        admin: ea ? ea.checked : false
+        avisar: f.querySelector(".e-avisar").checked
       });
       ok.disabled = false;
       if (r.error) { msg.textContent = r.error; return; }
@@ -535,11 +556,11 @@
     const email = $("aemail").value.trim();
     if (!nombre || !apellido || !email) { $("amsg").textContent = "Escribe el nombre, el apellido y el correo del alumno."; return; }
     $("aok").disabled = true;
-    const r = await post({ action: "alumnoAdd", nombre, apellido, email, code: $("acode").value.trim(), admin: $("aadmin").checked });
+    const r = await post({ action: "alumnoAdd", nombre, apellido, email, code: $("acode").value.trim() });
     $("aok").disabled = false;
     if (r.error) { $("amsg").textContent = r.error; return; }
     $("amsg").textContent = "Agregado: " + r.nombre + " (" + r.email + ") · código " + r.code + (r.enviado ? " · correo enviado" : " · no se pudo enviar el correo, pásale el código tú");
-    $("anombre").value = ""; $("aapellido").value = ""; $("aemail").value = ""; $("acode").value = ""; $("aadmin").checked = false;
+    $("anombre").value = ""; $("aapellido").value = ""; $("aemail").value = ""; $("acode").value = "";
     cargarAlumnos();
   };
 
@@ -652,9 +673,17 @@
       if (ver) localStorage.setItem("itma_adminlink", "1");
       else ver = localStorage.getItem("itma_adminlink") === "1";
     } catch (e) {}
-    const mostrar = ver && !clave;
-    $("admin").style.display = mostrar ? "inline-block" : "none";
-    $("lprof").style.display = mostrar ? "" : "none";
+    const b = $("admin");
+    if (adminRol) {
+      // Solo el alumno nombrado administrador ve este botón, después de iniciar sesión
+      b.style.display = "inline-block";
+      b.textContent = clave === "@rol" ? "Vista de alumno" : "Acceso profesor";
+    } else {
+      const mostrar = ver && !clave;
+      b.style.display = mostrar ? "inline-block" : "none";
+      b.textContent = "Acceso profesor";
+    }
+    $("lprof").style.display = (ver && !clave && !adminRol) ? "" : "none";
   }
   window.addEventListener("hashchange", ajustarAdminBtn);
   ajustarAdminBtn();
