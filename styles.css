@@ -177,3 +177,5 @@
   :root[data-tema="light"] .delbtn { color:#c62828; border-color:#e3b0b0; }
   body { transition:background .25s, color .25s; }
   #tema { font-size:1rem; line-height:1; }
+
+  .tagadm { margin-left:8px; font-size:.7rem; background:var(--accent); color:var(--onacc); padding:2px 8px; border-radius:999px; font-weight:700; letter-spacing:.04em; }

@@ -7,7 +7,7 @@
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=14">
+<link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body>
 
@@ -18,7 +18,7 @@
     <button class="btn peq" id="tema" title="Cambiar tema" aria-label="Cambiar entre tema claro y oscuro">☀️</button>
     <button type="button" id="quien" class="quienbtn" style="display:none" title="Mis datos"></button>
     <button class="btn peq" id="salir" style="display:none">Salir</button>
-    <button class="btn peq" id="admin">Acceso profesor</button>
+    <button class="btn peq" id="admin" style="display:none">Acceso profesor</button>
   </div>
 </header>
 
@@ -46,6 +46,7 @@
       <input type="text" id="aapellido" placeholder="Apellido" autocomplete="off">
       <input type="text" id="aemail" placeholder="correo del alumno" autocapitalize="none">
       <input type="text" id="acode" placeholder="código (opcional)" autocapitalize="none">
+      <label class="chk" id="aadminwrap"><input type="checkbox" id="aadmin"> Administrador</label>
       <button class="btn main" id="aok">Agregar alumno</button>
     </div>
     <p id="amsg"></p>
@@ -96,7 +97,7 @@
     <p id="lerr"></p>
     <div class="lpie">
       <span>Solo tendrás que hacerlo una vez en este dispositivo.</span>
-      <button type="button" class="linkbtn" id="lprof">Soy profesor</button>
+      <button type="button" class="linkbtn" id="lprof" style="display:none">Soy profesor</button>
     </div>
   </div>
 </div>
@@ -127,6 +128,6 @@
   </div>
 </div>
 
-<script src="app.js?v=14"></script>
+<script src="app.js?v=15"></script>
 </body>
 </html>
