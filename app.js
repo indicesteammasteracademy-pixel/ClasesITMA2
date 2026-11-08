@@ -80,6 +80,7 @@
     ajustarAdminBtn();
     $("panel").classList.remove("show");
     $("panelAlumnos").classList.remove("show");
+    $("panelActividad").classList.remove("show");
     actualizarQuien();
     dibujar();
     mostrarLogin(msg);
@@ -123,10 +124,12 @@
       if (clave) {
         $("panel").classList.add("show");
         $("panelAlumnos").classList.add("show");
+        $("panelActividad").classList.add("show");
         cargarAlumnos();
       } else {
         $("panel").classList.remove("show");
         $("panelAlumnos").classList.remove("show");
+        $("panelActividad").classList.remove("show");
       }
       ajustarAdminBtn();
     } catch (e) {
@@ -275,6 +278,21 @@
     return card;
   }
 
+  // "5 de 12 clases · 42%" con una barra (solo para alumnos; cuenta las clases disponibles)
+  function progresoModulo(k) {
+    if (clave || !alumno) return null;
+    const disp = clases.filter(c => c.mod === k && c.id && !c.locked);
+    if (!disp.length) return null;
+    const hechas = disp.filter(c => vistos.has(c.id)).length;
+    const pct = Math.round(hechas * 100 / disp.length);
+    const d = document.createElement("div");
+    d.className = "prog";
+    d.innerHTML = '<div class="ptxt"></div><div class="pbarra"><div></div></div>';
+    d.querySelector(".ptxt").textContent = hechas + " de " + disp.length + " clases · " + pct + "%";
+    d.querySelector(".pbarra div").style.width = pct + "%";
+    return d;
+  }
+
   function dibujar() {
     const q = $("q").value.trim().toLowerCase();
     const grid = $("grid");
@@ -297,6 +315,7 @@
         h.textContent = (q && areas.length > 1 ? areas[modAreas[k]] + " · " : "") + nombre;
         w.appendChild(h);
       }
+      if (!q) { const pr = progresoModulo(k); if (pr) w.appendChild(pr); }
       if (vids.length) {
         const g = document.createElement("div");
         g.className = "grid";
@@ -376,6 +395,7 @@
   function ver(i) {
     const c = clases[i];
     marcarVisto(c);
+    cargarPreguntas(c);
     $("home").classList.add("hide");
     $("watch").classList.add("show");
     $("wtitle").textContent = c.titulo;
@@ -687,5 +707,232 @@
   }
   window.addEventListener("hashchange", ajustarAdminBtn);
   ajustarAdminBtn();
+
+
+  // ---------- Preguntas por clase ----------
+  let qVideo = null;
+  let qClase = null;
+
+  function fechaCorta(ms) {
+    return new Date(ms).toLocaleString("es", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  }
+
+  function credenciales() {
+    return clave ? {} : (alumno ? { email: alumno.email, code: alumno.code } : {});
+  }
+
+  async function cargarPreguntas(c) {
+    const box = $("qa");
+    qVideo = null;
+    qClase = c;
+    $("qmsg").textContent = "";
+    if (!hayAPI() || !c.id || (c.locked && !clave)) { box.hidden = true; return; }
+    qVideo = c.id;
+    box.hidden = false;
+    $("qform").style.display = clave ? "none" : "";
+    $("qlista").innerHTML = '<p class="qvacio">Cargando preguntas…</p>';
+    let r;
+    try { r = await post({ action: "qList", video: c.id, ...credenciales() }); }
+    catch (e) { r = { error: "No se pudieron cargar las preguntas." }; }
+    if (qVideo !== c.id) return;
+    dibujarPreguntas(r);
+  }
+
+  function dibujarPreguntas(r) {
+    const lista = $("qlista");
+    lista.innerHTML = "";
+    const aviso = txt => { const p = document.createElement("p"); p.className = "qvacio"; p.textContent = txt; lista.appendChild(p); };
+    if (r.error) { aviso(r.error); return; }
+    if (!r.preguntas.length) { aviso("Todavía no hay preguntas en esta clase."); return; }
+    r.preguntas.forEach(p => {
+      const it = document.createElement("div");
+      it.className = "q" + (p.mia ? " mia" : "");
+      const head = document.createElement("div");
+      head.className = "qhead";
+      const quien = document.createElement("span");
+      const b = document.createElement("b");
+      b.textContent = p.nombre + (p.mia ? " (tú)" : "");
+      quien.appendChild(b);
+      const f = document.createElement("span");
+      f.textContent = fechaCorta(p.fecha);
+      head.appendChild(quien);
+      head.appendChild(f);
+      const t = document.createElement("div");
+      t.className = "qtexto";
+      t.textContent = p.texto;
+      it.appendChild(head);
+      it.appendChild(t);
+      if (p.respuesta) {
+        const rs = document.createElement("div");
+        rs.className = "qresp";
+        const sm = document.createElement("small");
+        sm.textContent = "Respuesta del profesor · " + fechaCorta(p.fechaResp);
+        rs.appendChild(sm);
+        rs.appendChild(document.createTextNode(p.respuesta));
+        it.appendChild(rs);
+      } else if (!clave) {
+        const w = document.createElement("div");
+        w.className = "qpend";
+        w.textContent = "Esperando respuesta…";
+        it.appendChild(w);
+      }
+      if (clave) {
+        const box = document.createElement("div");
+        box.className = "qrep";
+        if (!p.respuesta) {
+          const ta = document.createElement("textarea");
+          ta.rows = 2;
+          ta.maxLength = 1000;
+          ta.placeholder = "Escribe tu respuesta…";
+          const fila = document.createElement("div");
+          fila.className = "qacc";
+          const lab = document.createElement("label");
+          lab.className = "chk";
+          const ch = document.createElement("input");
+          ch.type = "checkbox";
+          ch.checked = true;
+          lab.appendChild(ch);
+          lab.appendChild(document.createTextNode(" Avisar por correo"));
+          const ok = document.createElement("button");
+          ok.className = "btn main small";
+          ok.textContent = "Responder";
+          ok.onclick = async () => {
+            const txt = ta.value.trim();
+            if (!txt) return;
+            ok.disabled = true;
+            const rr = await post({ action: "qReply", video: qVideo, id: p.id, respuesta: txt, avisar: ch.checked });
+            if (rr.error) { alert(rr.error); ok.disabled = false; return; }
+            cargarPreguntas(qClase);
+            if ($("actres").dataset.cargado) cargarActividad();
+          };
+          fila.appendChild(lab);
+          fila.appendChild(ok);
+          box.appendChild(ta);
+          box.appendChild(fila);
+        }
+        const del = document.createElement("button");
+        del.className = "btn small delbtn";
+        del.style.marginLeft = "0";
+        del.textContent = "Borrar pregunta";
+        del.onclick = async () => {
+          if (!confirm("¿Borrar esta pregunta?")) return;
+          await post({ action: "qDel", video: qVideo, id: p.id });
+          cargarPreguntas(qClase);
+        };
+        box.appendChild(del);
+        it.appendChild(box);
+      }
+      lista.appendChild(it);
+    });
+  }
+
+  $("qenviar").onclick = async () => {
+    const msg = $("qmsg");
+    const t = $("qtexto").value.trim();
+    if (t.length < 3) { msg.textContent = "Escribe tu pregunta."; return; }
+    if (!alumno || !qVideo) return;
+    $("qenviar").disabled = true;
+    msg.textContent = "Enviando…";
+    try {
+      const r = await post({ action: "qAdd", video: qVideo, texto: t, email: alumno.email, code: alumno.code });
+      if (r.error) { msg.textContent = r.error; return; }
+      $("qtexto").value = "";
+      msg.textContent = "¡Pregunta enviada! El profesor te responderá aquí.";
+      cargarPreguntas(qClase);
+    } catch (e) {
+      msg.textContent = "No se pudo enviar. Revisa tu internet.";
+    } finally {
+      $("qenviar").disabled = false;
+    }
+  };
+
+  // ---------- Panel de actividad (administrador) ----------
+  function hace(ms) {
+    if (!ms) return "Nunca";
+    const m = Math.floor((Date.now() - ms) / 60000);
+    if (m < 2) return "Ahora mismo";
+    if (m < 60) return "Hace " + m + " min";
+    const h = Math.floor(m / 60);
+    if (h < 24) return "Hace " + h + (h === 1 ? " hora" : " horas");
+    const d = Math.floor(h / 24);
+    return "Hace " + d + (d === 1 ? " día" : " días");
+  }
+
+  async function cargarActividad() {
+    const res = $("actres");
+    res.innerHTML = '<p class="qvacio">Cargando…</p>';
+    const ids = clases.filter(c => c.id && !c.locked).map(c => c.id);
+    const r = await post({ action: "actividad", ids });
+    if (r.error) { res.textContent = r.error; return; }
+    res.dataset.cargado = "1";
+    const orden = $("actorden").value;
+    const lista = r.alumnos.slice();
+    if (orden === "inactivos") lista.sort((a, b) => a.ultima - b.ultima);
+    else if (orden === "recientes") lista.sort((a, b) => b.ultima - a.ultima);
+    else lista.sort((a, b) => a.vistas - b.vistas);
+    res.innerHTML = "";
+    const cab = document.createElement("div");
+    cab.className = "actrow acthead";
+    ["Alumno", "Última visita", "Visitas", "Clases vistas"].forEach(t => {
+      const s = document.createElement("span");
+      s.textContent = t;
+      cab.appendChild(s);
+    });
+    res.appendChild(cab);
+    if (!lista.length) { const p = document.createElement("p"); p.className = "qvacio"; p.textContent = "Todavía no hay alumnos registrados."; res.appendChild(p); }
+    lista.forEach(a => {
+      const row = document.createElement("div");
+      row.className = "actrow";
+      const c1 = document.createElement("span");
+      c1.textContent = (a.nombre ? a.nombre + " · " : "") + a.email;
+      const inactivo = !a.ultima || (Date.now() - a.ultima) > 7 * 24 * 3600 * 1000;
+      const c2 = document.createElement("span");
+      c2.textContent = hace(a.ultima);
+      if (inactivo) {
+        c2.className = "inact";
+        const tg = document.createElement("span");
+        tg.className = "tagin";
+        tg.textContent = "Inactivo";
+        c2.appendChild(tg);
+      }
+      const c3 = document.createElement("span");
+      c3.textContent = a.visitas;
+      const c4 = document.createElement("span");
+      const pct = r.total ? Math.round(Math.min(a.vistas, r.total) * 100 / r.total) : 0;
+      c4.textContent = Math.min(a.vistas, r.total) + " de " + r.total + " · " + pct + "%";
+      const mini = document.createElement("div");
+      mini.className = "mini";
+      mini.innerHTML = "<div></div>";
+      mini.firstChild.style.width = pct + "%";
+      c4.appendChild(mini);
+      row.appendChild(c1); row.appendChild(c2); row.appendChild(c3); row.appendChild(c4);
+      res.appendChild(row);
+    });
+
+    // Preguntas sin responder
+    const pend = $("qpend");
+    pend.innerHTML = "";
+    const pr = await post({ action: "qPend" });
+    if (pr.error) { pend.textContent = pr.error; return; }
+    if (!pr.pendientes.length) { pend.innerHTML = '<p class="qvacio">No hay preguntas pendientes. ¡Todo respondido!</p>'; return; }
+    pr.pendientes.forEach(p => {
+      const idx = clases.findIndex(c => c.id === p.video);
+      const row = document.createElement("div");
+      row.className = "pendrow";
+      const t = document.createElement("span");
+      t.textContent = (p.nombre || p.email) + " en «" + (idx >= 0 ? clases[idx].titulo : "clase eliminada") + "»: " + p.texto;
+      row.appendChild(t);
+      if (idx >= 0) {
+        const b = document.createElement("button");
+        b.className = "btn small";
+        b.textContent = "Abrir y responder";
+        b.onclick = () => ver(idx);
+        row.appendChild(b);
+      }
+      pend.appendChild(row);
+    });
+  }
+  $("actbtn").onclick = cargarActividad;
+  $("actorden").onchange = () => { if ($("actres").dataset.cargado) cargarActividad(); };
 
   cargar();

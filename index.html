@@ -7,7 +7,7 @@
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=16">
+<link rel="stylesheet" href="styles.css?v=17">
 </head>
 <body>
 
@@ -52,6 +52,22 @@
     <div id="alista"></div>
   </div>
 
+  <div class="panel" id="panelActividad">
+    <h2>Actividad de los alumnos</h2>
+    <p class="hint">Quién entró, cuándo fue su última visita y cuántas clases ha visto. Los que llevan más de 7 días sin entrar salen marcados.</p>
+    <div class="row">
+      <button class="btn main" id="actbtn">Ver actividad</button>
+      <select id="actorden" aria-label="Ordenar">
+        <option value="inactivos">Más tiempo sin entrar primero</option>
+        <option value="recientes">Entraron más recientemente primero</option>
+        <option value="avance">Menos clases vistas primero</option>
+      </select>
+    </div>
+    <div id="actres"></div>
+    <h3 class="subt">Preguntas sin responder</h3>
+    <div id="qpend"></div>
+  </div>
+
 
   <p class="nota" id="nota"></p>
 
@@ -69,6 +85,15 @@
       <div id="player"></div>
       <h2 id="wtitle"></h2>
       <p class="sub" id="wsub"></p>
+      <section class="qa" id="qa" hidden>
+        <h3>💬 Preguntas de la clase</h3>
+        <div class="qform" id="qform">
+          <textarea id="qtexto" maxlength="500" rows="3" placeholder="Escribe tu duda sobre esta clase…"></textarea>
+          <button class="btn main" id="qenviar">Enviar pregunta</button>
+        </div>
+        <p id="qmsg"></p>
+        <div id="qlista"></div>
+      </section>
     </div>
     <aside id="side"><h3>Más clases</h3><div id="list"></div></aside>
   </section>
@@ -127,6 +152,6 @@
   </div>
 </div>
 
-<script src="app.js?v=16"></script>
+<script src="app.js?v=17"></script>
 </body>
 </html>

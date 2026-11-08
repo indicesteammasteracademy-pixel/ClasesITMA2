@@ -179,3 +179,40 @@
   #tema { font-size:1rem; line-height:1; }
 
   .tagadm { margin-left:8px; font-size:.7rem; background:var(--accent); color:var(--onacc); padding:2px 8px; border-radius:999px; font-weight:700; letter-spacing:.04em; }
+
+  /* ---------- Progreso por módulo ---------- */
+  .prog { margin:0 0 16px; }
+  .ptxt { font-size:.92rem; color:var(--muted); margin-bottom:6px; }
+  .pbarra { height:9px; background:var(--campo); border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+  .pbarra div { height:100%; width:0; background:linear-gradient(90deg, var(--accent), #5ee0ff); border-radius:999px; transition:width .5s; }
+
+  /* ---------- Preguntas por clase ---------- */
+  .qa { margin-top:26px; }
+  .qa h3, .subt { font-family:Syne,sans-serif; font-size:1.05rem; margin:0 0 12px; }
+  .subt { margin-top:22px; }
+  .qform { display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+  .qform textarea, .qrep textarea { width:100%; background:var(--campo); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px; font:inherit; resize:vertical; }
+  .qform textarea:focus, .qrep textarea:focus { outline:none; border-color:var(--accent); }
+  #qmsg { color:var(--muted); font-size:.9rem; min-height:1.2em; margin:8px 0 0; }
+  .q { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:12px; }
+  .q.mia { border-color:var(--accent); }
+  .qhead { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; font-size:.88rem; color:var(--muted); margin-bottom:6px; }
+  .qhead b { color:var(--text); }
+  .qtexto { white-space:pre-wrap; word-break:break-word; }
+  .qresp { margin-top:10px; padding:10px 12px; border-left:3px solid var(--accent); background:var(--campo); border-radius:0 10px 10px 0; white-space:pre-wrap; word-break:break-word; }
+  .qresp small { display:block; color:var(--muted); margin-bottom:4px; }
+  .qpend { color:var(--muted); font-size:.88rem; margin-top:8px; }
+  .qrep { margin-top:10px; display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+  .qacc { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .qvacio { color:var(--muted); }
+
+  /* ---------- Panel de actividad ---------- */
+  #actres { margin-top:14px; }
+  .actrow { display:grid; grid-template-columns:minmax(160px,2fr) 1.2fr .6fr 1.4fr; gap:10px; align-items:center; border-top:1px solid var(--line); padding:10px 0; font-size:.92rem; }
+  .acthead { color:var(--muted); font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; border-top:0; }
+  .actrow .mini { height:7px; background:var(--campo); border:1px solid var(--line); border-radius:999px; overflow:hidden; margin-top:4px; }
+  .actrow .mini div { height:100%; background:var(--accent); }
+  .inact { color:#e5484d; font-weight:600; }
+  .tagin { font-size:.7rem; background:#e5484d; color:#fff; padding:2px 7px; border-radius:999px; margin-left:6px; }
+  .pendrow { border-top:1px solid var(--line); padding:10px 0; font-size:.92rem; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; }
+  @media (max-width:700px) { .actrow { grid-template-columns:1fr 1fr; } .acthead { display:none; } }
