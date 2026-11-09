@@ -216,3 +216,12 @@
   .tagin { font-size:.7rem; background:#e5484d; color:#fff; padding:2px 7px; border-radius:999px; margin-left:6px; }
   .pendrow { border-top:1px solid var(--line); padding:10px 0; font-size:.92rem; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; }
   @media (max-width:700px) { .actrow { grid-template-columns:1fr 1fr; } .acthead { display:none; } }
+
+  /* ---------- Foto de perfil ---------- */
+  .avatar { width:30px; height:30px; border-radius:50%; background:var(--accent); color:var(--onacc); display:inline-grid; place-items:center; font-weight:700; font-size:.9rem; overflow:hidden; flex:none; }
+  .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .avatar.grande { width:84px; height:84px; font-size:2rem; }
+  #quien { display:inline-flex; align-items:center; gap:8px; }
+  #quien .qn { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
+  .pfoto { display:flex; gap:16px; align-items:center; }
+  .pfbtn { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }

@@ -7,7 +7,7 @@
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=17">
+<link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
 
@@ -129,6 +129,14 @@
 <div class="pmodal" id="perfil">
   <div class="pbox">
     <h2>Mis datos</h2>
+    <div class="pfoto">
+      <span class="avatar grande" id="pf-avatar"></span>
+      <div class="pfbtn">
+        <button class="btn small" id="pf-cambiar" type="button">Cambiar foto</button>
+        <button class="btn small" id="pf-quitar" type="button">Quitar foto</button>
+        <input type="file" id="pf-file" accept="image/*" hidden>
+      </div>
+    </div>
     <p class="mail">Correo: <b id="pf-email"></b> <small>(no se puede cambiar)</small></p>
     <input type="text" id="pf-nombre" placeholder="Nombre" autocomplete="given-name">
     <input type="text" id="pf-apellido" placeholder="Apellido" autocomplete="family-name">
@@ -152,6 +160,6 @@
   </div>
 </div>
 
-<script src="app.js?v=17"></script>
+<script src="app.js?v=18"></script>
 </body>
 </html>

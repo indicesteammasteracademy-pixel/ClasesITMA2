@@ -59,13 +59,41 @@
     l.classList.add("saliendo");
     tOcultar = setTimeout(() => l.classList.remove("show", "saliendo"), 450);
   }
+  function avatarEl(nombre, foto) {
+    const a = document.createElement("span");
+    a.className = "avatar";
+    if (foto) {
+      const i = document.createElement("img");
+      i.src = foto;
+      i.alt = "";
+      a.appendChild(i);
+    } else {
+      a.textContent = ((nombre || "?").trim().charAt(0) || "?").toUpperCase();
+    }
+    return a;
+  }
+
+  // Guarda la sesión del alumno en el dispositivo (sin la foto, que se pide de nuevo al entrar)
+  function guardarAlumno() {
+    if (!alumno) return;
+    try { localStorage.setItem("itma_alumno", JSON.stringify({ email: alumno.email, code: alumno.code, nombre: alumno.nombre })); } catch (e) {}
+  }
+
   function actualizarQuien() {
     const q = $("quien");
     let nombre = "";
-    if (clave === "@rol" && alumno) nombre = (alumno.nombre || alumno.email) + " · Admin";
+    let conAvatar = false;
+    if (clave === "@rol" && alumno) { nombre = (alumno.nombre || alumno.email) + " · Admin"; conAvatar = true; }
     else if (clave) nombre = "Profesor";
-    else if (alumno) nombre = alumno.nombre || alumno.email;
-    q.textContent = nombre ? "👤 " + nombre + (clave ? "" : "  ✎") : "";
+    else if (alumno) { nombre = alumno.nombre || alumno.email; conAvatar = true; }
+    q.innerHTML = "";
+    if (nombre) {
+      if (conAvatar) q.appendChild(avatarEl(alumno.nombre || alumno.email, alumno.foto || ""));
+      const t = document.createElement("span");
+      t.className = "qn";
+      t.textContent = nombre + (clave ? "" : "  ✎");
+      q.appendChild(t);
+    }
     q.disabled = !!clave;
     q.style.display = nombre ? "" : "none";
   }
@@ -105,7 +133,8 @@
       vistos = new Set(Array.isArray(r) ? [] : (r.vistos || []));
       if (!clave && alumno && !Array.isArray(r) && r.nombre !== undefined) {
         alumno.nombre = r.nombre || "";
-        try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
+        alumno.foto = r.foto || "";
+        guardarAlumno();
       }
       if (!Array.isArray(r) && r.admin !== undefined) adminRol = !!r.admin;
       modulos = (!Array.isArray(r) && r.modulos && r.modulos.length) ? r.modulos : ["Clases"];
@@ -153,7 +182,7 @@
     $("lok").disabled = false;
     $("lok").classList.remove("cargando");
     if (alumno) {
-      try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
+      guardarAlumno();
     }
     if (alumno) $("lcode").value = "";
   };
@@ -626,6 +655,45 @@
 
 
   // ---------- Mis datos (el alumno cambia su nombre y su código; el correo no) ----------
+  let pfFoto; // undefined = sin cambios · "" = quitar · texto = foto nueva
+
+  function pintarAvatarPerfil() {
+    const a = $("pf-avatar");
+    a.innerHTML = "";
+    const foto = pfFoto !== undefined ? pfFoto : (alumno.foto || "");
+    if (foto) {
+      const i = document.createElement("img");
+      i.src = foto;
+      i.alt = "";
+      a.appendChild(i);
+    } else {
+      a.textContent = ((alumno.nombre || alumno.email).trim().charAt(0) || "?").toUpperCase();
+    }
+  }
+
+  // Recorta la foto en cuadrado y la reduce a 128 px para que pese poco
+  function reducirFoto(file) {
+    return new Promise((ok, fail) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const L = 128;
+        const lado = Math.min(img.width, img.height);
+        const cv = document.createElement("canvas");
+        cv.width = L;
+        cv.height = L;
+        const ctx = cv.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, L, L);
+        ctx.drawImage(img, (img.width - lado) / 2, (img.height - lado) / 2, lado, lado, 0, 0, L, L);
+        URL.revokeObjectURL(url);
+        ok(cv.toDataURL("image/jpeg", 0.82));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); fail(new Error("imagen")); };
+      img.src = url;
+    });
+  }
+
   function abrirPerfil() {
     if (clave || !alumno) return;
     const partes = (alumno.nombre || "").split(" ");
@@ -635,11 +703,28 @@
     $("pf-code").value = "";
     $("pf-code2").value = "";
     $("pf-msg").textContent = "";
+    pfFoto = undefined;
+    pintarAvatarPerfil();
     $("perfil").classList.add("open");
   }
   function cerrarPerfil() { $("perfil").classList.remove("open"); }
   $("quien").onclick = abrirPerfil;
   $("pf-no").onclick = cerrarPerfil;
+  $("pf-cambiar").onclick = () => $("pf-file").click();
+  $("pf-quitar").onclick = () => { pfFoto = ""; pintarAvatarPerfil(); };
+  $("pf-file").onchange = async () => {
+    const f = $("pf-file").files[0];
+    $("pf-file").value = "";
+    if (!f) return;
+    if (!f.type.startsWith("image/")) { $("pf-msg").textContent = "Elige una imagen (JPG o PNG)."; return; }
+    try {
+      pfFoto = await reducirFoto(f);
+      pintarAvatarPerfil();
+      $("pf-msg").textContent = "Foto lista. Toca Guardar para aplicarla.";
+    } catch (e) {
+      $("pf-msg").textContent = "No se pudo leer esa imagen. Prueba con otra.";
+    }
+  };
   $("perfil").addEventListener("click", e => { if (e.target === $("perfil")) cerrarPerfil(); });
   $("pf-ok").onclick = async () => {
     const msg = $("pf-msg");
@@ -655,11 +740,12 @@
     $("pf-ok").disabled = true;
     msg.textContent = "Guardando…";
     try {
-      const r = await post({ action: "perfilEdit", email: alumno.email, code: alumno.code, nombre, apellido, nuevoCode: c1 });
+      const r = await post({ action: "perfilEdit", email: alumno.email, code: alumno.code, nombre, apellido, nuevoCode: c1, foto: pfFoto });
       if (r.error) { msg.textContent = r.error; return; }
       alumno.nombre = r.nombre;
+      if (pfFoto !== undefined) alumno.foto = pfFoto;
       if (c1) alumno.code = c1;
-      try { localStorage.setItem("itma_alumno", JSON.stringify(alumno)); } catch (e) {}
+      guardarAlumno();
       actualizarQuien();
       msg.textContent = "¡Datos actualizados!";
       setTimeout(cerrarPerfil, 900);
