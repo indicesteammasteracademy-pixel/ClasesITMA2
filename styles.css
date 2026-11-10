@@ -71,7 +71,7 @@
   .login::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(2,5,12,.92) 0%, rgba(2,5,12,.35) 45%, rgba(2,5,12,0) 100%); }
   @keyframes zoom { from { transform:scale(1); } to { transform:scale(1.09); } }
 
-  .login-box { position:relative; z-index:1; width:min(860px,100%); margin-bottom:max(14px,3vh); padding:24px 26px 18px; border-radius:22px; background:rgba(6,12,28,.62); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(34,199,240,.35); animation:subir .9s cubic-bezier(.2,.8,.2,1) both, brillo 4s ease-in-out infinite; }
+  .login-box { position:relative; z-index:1; width:min(250px,100%); margin-bottom:max(14px,3vh); padding:24px 26px 18px; border-radius:22px; background:rgba(6,12,28,.62); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(34,199,240,.35); animation:subir .9s cubic-bezier(.2,.8,.2,1) both, brillo 4s ease-in-out infinite; }
   @keyframes subir { from { opacity:0; transform:translateY(40px) scale(.97); } to { opacity:1; transform:none; } }
   @keyframes brillo { 0%,100% { box-shadow:0 0 28px rgba(34,199,240,.14), 0 20px 60px rgba(0,0,0,.55); } 50% { box-shadow:0 0 52px rgba(34,199,240,.34), 0 20px 60px rgba(0,0,0,.55); } }
   .login-box.shake { animation:sacudir .45s; }
