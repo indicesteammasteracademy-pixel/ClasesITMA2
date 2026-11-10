@@ -4,6 +4,19 @@
 <meta charset="UTF-8">
 <script>try{var t=localStorage.getItem("itma_tema");if(t)document.documentElement.setAttribute("data-tema",t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+(function () {
+  var appMode = new URLSearchParams(window.location.search).get("itma_app") === "1";
+  window.ITMA_APP_MODE = appMode;
+  if (appMode) {
+    document.documentElement.classList.add("itma-app-mode");
+    try {
+      localStorage.removeItem("itma_clave");
+      localStorage.removeItem("itma_adminlink");
+    } catch (e) {}
+  }
+})();
+</script>
 <title>Clases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
@@ -161,5 +174,6 @@
 </div>
 
 <script src="app.js?v=18"></script>
+<script src="app-mode.js?v=1"></script>
 </body>
 </html>
