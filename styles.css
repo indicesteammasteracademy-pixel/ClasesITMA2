@@ -64,27 +64,12 @@
   .footer { gap:10px; }
 
   /* ---------- Pantalla de entrada ---------- */
-    .login::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    /* Usamos 'contain' en lugar de 'cover' para que nunca se corte el logo */
-    background: url("ITMA_LOGO_INICIO_SESION.jpg") center 28% / min(780px, 85vw) auto no-repeat;
-    animation: zoom 26s ease-in-out infinite alternate;
-  }
-
-  .login::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(2,5,12,.92) 0%, rgba(2,5,12,.35) 45%, rgba(2,5,12,0) 100%);
-  }
-
-  @keyframes zoom {
-    from { transform: scale(1); }
-    to { transform: scale(1.04); }
-  }
-
+    login { position:fixed; inset:0; z-index:50; background:#02050c; display:none; overflow:hidden; padding:20px; align-items:end; justify-items:center; transition:opacity .45s; }
+  .login.show { display:grid; }
+  .login.saliendo { opacity:0; pointer-events:none; }
+  .login::before { content:""; position:absolute; inset:0; background:url(ITMA_LOGO_INICIO_SESION.jpg) center/cover no-repeat; animation:zoom 26s ease-in-out infinite alternate; }
+  .login::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(2,5,12,.92) 0%, rgba(2,5,12,.35) 45%, rgba(2,5,12,0) 100%); }
+  @keyframes zoom { from { transform:scale(1); } to { transform:scale(1.09); } }
 
   .login-box { position:relative; z-index:1; width:min(800px,100%); margin-bottom:max(14px,3vh); padding:24px 26px 18px; border-radius:22px; background:rgba(6,12,28,.62); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(34,199,240,.35); animation:subir .9s cubic-bezier(.2,.8,.2,1) both, brillo 4s ease-in-out infinite; }
   @keyframes subir { from { opacity:0; transform:translateY(40px) scale(.97); } to { opacity:1; transform:none; } }
