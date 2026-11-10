@@ -67,7 +67,7 @@
   .login { position:fixed; inset:0; z-index:50; background:#02050c; display:none; overflow:hidden; padding:20px; align-items:end; justify-items:center; transition:opacity .45s; }
   .login.show { display:grid; }
   .login.saliendo { opacity:0; pointer-events:none; }
-  .login::before { content:""; position:absolute; inset:0; background:url(ITMA LOGO.jpeg) center/cover no-repeat; animation:zoom 26s ease-in-out infinite alternate; }
+  .login::before { content:""; position:absolute; inset:0; background:url(ITMA ACADEMY NUEVO LOGO.png) center/cover no-repeat; animation:zoom 26s ease-in-out infinite alternate; }
   .login::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(2,5,12,.92) 0%, rgba(2,5,12,.35) 45%, rgba(2,5,12,0) 100%); }
   @keyframes zoom { from { transform:scale(1); } to { transform:scale(1.09); } }
 
