@@ -225,3 +225,28 @@
   #quien .qn { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
   .pfoto { display:flex; gap:16px; align-items:center; }
   .pfbtn { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+
+
+/* ---------- Modo aplicación ITMA (solo cuando ?itma_app=1) ---------- */
+html.itma-app-mode #admin,
+html.itma-app-mode #lprof,
+html.itma-app-mode #panel,
+html.itma-app-mode #panelAlumnos,
+html.itma-app-mode #panelActividad {
+  display: none !important;
+}
+
+html.itma-app-mode header {
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+
+html.itma-app-mode main {
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+}
+
+@media (max-width: 700px) {
+  html.itma-app-mode main { padding-left: 14px; padding-right: 14px; }
+  html.itma-app-mode #grid { grid-template-columns: 1fr; gap: 16px; }
+  html.itma-app-mode .card { border-radius: 16px; }
+  html.itma-app-mode .info { padding: 14px 16px 17px; }
+}
