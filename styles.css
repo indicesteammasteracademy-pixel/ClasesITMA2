@@ -64,7 +64,7 @@
   .footer { gap:10px; }
 
   /* ---------- Pantalla de entrada ---------- */
-    login { position:fixed; inset:0; z-index:50; background:#02050c; display:none; overflow:hidden; padding:20px; align-items:end; justify-items:center; transition:opacity .45s; }
+  .login { position:fixed; inset:0; z-index:50; background:#02050c; display:none; overflow:hidden; padding:20px; align-items:end; justify-items:center; transition:opacity .45s; }
   .login.show { display:grid; }
   .login.saliendo { opacity:0; pointer-events:none; }
   .login::before { content:""; position:absolute; inset:0; background:url(ITMA_LOGO_INICIO_SESION.jpg) center/cover no-repeat; animation:zoom 26s ease-in-out infinite alternate; }
@@ -225,3 +225,54 @@
   #quien .qn { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
   .pfoto { display:flex; gap:16px; align-items:center; }
   .pfbtn { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+
+
+/* ---------- Fondo nítido de inicio de sesión ITMA ---------- */
+/* La imagen nueva debe estar en la raíz del sitio con este nombre. */
+.login::before {
+  inset: 0;
+  background-image: url("./ITMA_FONDO_TRADING.png");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform: none;
+  animation: none;
+  filter: none;
+}
+
+.login::after {
+  background: linear-gradient(
+    180deg,
+    rgba(2, 5, 12, .08) 0%,
+    rgba(2, 5, 12, .18) 48%,
+    rgba(2, 5, 12, .78) 100%
+  );
+}
+
+@media (max-width: 760px) {
+  .login::before {
+    inset: 0;
+    height: 100%;
+    background-position: center center;
+    background-size: cover;
+  }
+
+  .login::after {
+    background: linear-gradient(
+      180deg,
+      rgba(2, 5, 12, .12) 0%,
+      rgba(2, 5, 12, .30) 42%,
+      rgba(2, 5, 12, .88) 100%
+    );
+  }
+
+  .login {
+    padding: 16px;
+    align-items: end;
+  }
+
+  .login-box {
+    width: min(560px, 100%);
+    margin-bottom: max(10px, 2vh);
+  }
+}
