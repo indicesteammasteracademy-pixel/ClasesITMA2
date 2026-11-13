@@ -225,3 +225,133 @@
   #quien .qn { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
   .pfoto { display:flex; gap:16px; align-items:center; }
   .pfbtn { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+
+
+/* ==========================================================
+   ITMA ACADEMY — ACCESO PREMIUM COMPARTIDO WEB / MÓVIL
+   Solo presentación: conserva HTML, IDs, autenticación y JS.
+   ========================================================== */
+.login {
+  align-items: center;
+  justify-items: center;
+  padding: clamp(18px, 4vw, 42px);
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 18% 18%, rgba(16, 105, 171, .34), transparent 42%),
+    radial-gradient(ellipse at 85% 82%, rgba(34, 199, 240, .19), transparent 38%),
+    #030814;
+}
+.login::before {
+  inset: -4%;
+  opacity: .56;
+  filter: saturate(1.12);
+  transform-origin: center;
+}
+.login::after {
+  background:
+    linear-gradient(115deg, rgba(2, 8, 22, .78), rgba(3, 12, 30, .43) 48%, rgba(2, 7, 19, .82)),
+    radial-gradient(ellipse at 50% 50%, transparent 5%, rgba(1, 5, 15, .42) 100%);
+}
+.login-box {
+  width: min(490px, 100%);
+  margin: 0;
+  padding: clamp(26px, 4vw, 38px);
+  border: 1px solid rgba(83, 211, 247, .42);
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(8, 20, 43, .91), rgba(4, 11, 27, .84));
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .58), inset 0 1px 0 rgba(255,255,255,.08), 0 0 44px rgba(34,199,240,.12);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+.lhead { text-align: center; }
+.lhead::before {
+  content: "ITMA";
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 20px;
+  border: 1px solid rgba(77, 215, 255, .62);
+  border-radius: 20px;
+  color: #dffaff;
+  background: linear-gradient(145deg, rgba(34,199,240,.28), rgba(10,53,94,.56));
+  box-shadow: 0 0 32px rgba(34,199,240,.24), inset 0 1px 0 rgba(255,255,255,.2);
+  font: 800 1.22rem Syne, sans-serif;
+  letter-spacing: .1em;
+}
+.lhead h2 {
+  color: #f2f8ff;
+  font-size: clamp(1.35rem, 3vw, 1.7rem);
+  line-height: 1.2;
+  letter-spacing: -.035em;
+}
+.lhead p {
+  max-width: 350px;
+  margin: 10px auto 0;
+  color: #a8bad5;
+  line-height: 1.55;
+}
+.lform {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  margin-top: 28px;
+}
+.campo { gap: 8px; color: #c0d0e7; font-weight: 600; }
+.campo input {
+  min-height: 52px;
+  padding: 14px 16px;
+  border: 1px solid rgba(139, 169, 207, .25);
+  border-radius: 14px;
+  background: rgba(2, 8, 21, .72);
+  color: #f2f8ff;
+}
+.campo input::placeholder { color: #7085a5; }
+.campo input:focus {
+  border-color: #39c9f1;
+  box-shadow: 0 0 0 4px rgba(34,199,240,.13), 0 0 22px rgba(34,199,240,.1);
+}
+.pw button { right: 8px; color: #a9c1dc; }
+#lok {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 5px;
+  border: 1px solid rgba(113, 232, 255, .55);
+  border-radius: 14px;
+  background: linear-gradient(105deg, #087fae, #16b9dc 55%, #35d5ec);
+  color: #031321;
+  font-weight: 800;
+  letter-spacing: .025em;
+  box-shadow: 0 10px 28px rgba(12, 160, 207, .23);
+}
+#lok:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(12, 184, 224, .34);
+}
+#lerr { text-align: center; min-height: 1.35em; }
+.lpie {
+  justify-content: center;
+  margin-top: 12px;
+  color: #91a7c6;
+  text-align: center;
+  line-height: 1.5;
+}
+.linkbtn { color: #61dcfa; }
+@media (max-width: 760px) {
+  .login { padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
+  .login::before { inset: -4%; height: auto; }
+  .login::after {
+    background: linear-gradient(115deg, rgba(2,8,22,.76), rgba(3,12,30,.55), rgba(2,7,19,.82));
+  }
+  .login-box {
+    width: min(440px, 100%);
+    padding: 27px 22px 23px;
+    border-radius: 23px;
+  }
+  .lform { grid-template-columns: 1fr; }
+  .lhead h2 { font-size: 1.38rem; }
+  #lok { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login::before, .login-box { animation: none !important; }
+}
