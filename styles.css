@@ -900,3 +900,16 @@
   .campo input { min-height: 39px; padding: 8px 11px; }
   #lok { min-height: 40px; }
 }
+
+
+/* ITMA v26 — centrar la tarjeta de acceso sin alterar su diseño */
+.login {
+  align-items: center !important;
+  justify-items: center !important;
+}
+@media (max-width: 760px) {
+  .login {
+    align-items: center !important;
+    justify-items: center !important;
+  }
+}
