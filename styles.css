@@ -937,3 +937,22 @@
     border-radius: 16px;
   }
 }
+
+
+/* ITMA v29 — logo más visible en pantallas móviles */
+@media (max-width: 760px) {
+  .login .lhead::before {
+    display: block !important;
+    width: min(76vw, 260px) !important;
+    height: clamp(92px, 27vw, 126px) !important;
+    margin: 0 auto 14px !important;
+    border: 2px solid rgba(91, 225, 255, .95) !important;
+    border-radius: 18px !important;
+    background: rgba(2, 10, 25, .72) url("./ITMA_FONDO_TRADING.png") center / contain no-repeat !important;
+    box-shadow: 0 0 12px rgba(34,199,240,.8), 0 0 34px rgba(34,199,240,.48), 0 8px 25px rgba(0,0,0,.48) !important;
+    filter: brightness(1.18) contrast(1.08) saturate(1.12);
+  }
+  .login-box {
+    padding-top: 16px;
+  }
+}
