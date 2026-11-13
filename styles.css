@@ -939,20 +939,25 @@
 }
 
 
-/* ITMA v29 — logo más visible en pantallas móviles */
+/* ITMA v30 — dar protagonismo a la imagen de fondo en móvil.
+   Conserva el logo, el formulario y la distribución; solo suaviza las capas. */
 @media (max-width: 760px) {
-  .login .lhead::before {
-    display: block !important;
-    width: min(76vw, 260px) !important;
-    height: clamp(92px, 27vw, 126px) !important;
-    margin: 0 auto 14px !important;
-    border: 2px solid rgba(91, 225, 255, .95) !important;
-    border-radius: 18px !important;
-    background: rgba(2, 10, 25, .72) url("./ITMA_FONDO_TRADING.png") center / contain no-repeat !important;
-    box-shadow: 0 0 12px rgba(34,199,240,.8), 0 0 34px rgba(34,199,240,.48), 0 8px 25px rgba(0,0,0,.48) !important;
-    filter: brightness(1.18) contrast(1.08) saturate(1.12);
+  .login::before {
+    opacity: 1 !important;
+    filter: saturate(1.14) contrast(1.06) !important;
+  }
+  .login::after {
+    background: linear-gradient(
+      0deg,
+      rgba(1,7,18,.30),
+      rgba(1,7,18,.045) 58%,
+      rgba(1,7,18,.015)
+    ) !important;
   }
   .login-box {
-    padding-top: 16px;
+    background: rgba(4,13,29,.52) !important;
+    border-color: rgba(91,218,255,.34) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
   }
 }
