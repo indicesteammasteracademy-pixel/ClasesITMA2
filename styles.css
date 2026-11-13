@@ -924,7 +924,7 @@
   margin: 0 auto 14px;
   border: 1px solid rgba(77,215,255,.72);
   border-radius: 20px;
-  background: url("https://raw.githubusercontent.com/indicesteammasteracademy-pixel/ITMAMOVIL/main/www/ITMA_LOGO_INICIO_SESION.jpg") center / contain no-repeat;
+  background: url("./ITMA_FONDO_TRADING.png") center / cover no-repeat;
   box-shadow: 0 0 28px rgba(34,199,240,.28), 0 8px 24px rgba(0,0,0,.3);
 }
 .login .lhead { text-align: center; }
