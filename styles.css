@@ -580,3 +580,193 @@
   .modulo { animation:none; }
   #tabs .tab,.grid .card { transition:none; }
 }
+
+
+/* ==========================================================
+   ITMA ACADEMY — NUEVA PORTADA DE ACCESO / LOGIN
+   Diseño de dos paneles; no altera IDs ni lógica de acceso.
+   ========================================================== */
+.login {
+  align-items: center;
+  justify-items: center;
+  padding: clamp(18px, 4vw, 48px);
+  background:
+    radial-gradient(circle at 12% 20%, rgba(20,153,208,.25), transparent 34%),
+    radial-gradient(circle at 88% 82%, rgba(34,199,240,.18), transparent 36%),
+    #020713;
+}
+.login::before {
+  inset: -5%;
+  opacity: .34;
+  filter: saturate(1.2) contrast(1.08);
+}
+.login::after {
+  background: linear-gradient(120deg, rgba(1,7,18,.72), rgba(2,10,25,.52) 50%, rgba(1,6,17,.78));
+}
+.login-box {
+  display: grid;
+  grid-template-columns: minmax(0,.92fr) minmax(0,1.08fr);
+  grid-template-areas:
+    "intro form"
+    "foot foot"
+    "error error";
+  gap: 0;
+  width: min(980px,100%);
+  min-height: 510px;
+  margin: 0;
+  padding: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(91,218,255,.48);
+  border-radius: 30px;
+  background: linear-gradient(135deg,rgba(8,24,48,.96),rgba(3,11,27,.94));
+  box-shadow: 0 35px 100px rgba(0,0,0,.62), 0 0 65px rgba(25,174,224,.16), inset 0 1px 0 rgba(255,255,255,.09);
+}
+.lhead {
+  grid-area: intro;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 470px;
+  padding: clamp(25px,4vw,48px);
+  text-align: left;
+  border: 1px solid rgba(87,207,245,.18);
+  border-radius: 22px;
+  background:
+    linear-gradient(155deg,rgba(9,64,98,.64),rgba(5,20,42,.76) 65%),
+    radial-gradient(circle at 20% 18%,rgba(34,199,240,.2),transparent 48%);
+  position: relative;
+  overflow: hidden;
+}
+.lhead::after {
+  content: "APRENDER · CRECER · DOMINAR";
+  display: block;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(110,218,248,.25);
+  color: #76dff7;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+.lhead::before {
+  width: 92px;
+  height: 92px;
+  flex: 0 0 92px;
+  margin: 0 0 34px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg,rgba(2,12,28,.08),rgba(2,12,28,.22)),
+    url("./ITMA_FONDO_TRADING.png") center/cover no-repeat;
+  box-shadow: 0 0 0 7px rgba(68,207,245,.07), 0 0 42px rgba(34,199,240,.34);
+}
+.lhead h2 {
+  max-width: 390px;
+  font-size: clamp(1.8rem,3.2vw,2.55rem);
+  line-height: 1.08;
+  letter-spacing: -.055em;
+}
+.lhead p {
+  max-width: 330px;
+  margin: 16px 0 0;
+  color: #b5c9e2;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.lform {
+  grid-area: form;
+  align-self: center;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 19px;
+  margin: 0;
+  padding: clamp(25px,4vw,54px);
+}
+.lform::before {
+  content: "ACCESO A TU CUENTA";
+  display: block;
+  margin-bottom: 3px;
+  color: #66dffb;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .2em;
+}
+.campo { gap: 9px; color: #d2e1f3; font-size: .9rem; font-weight: 700; }
+.campo input {
+  min-height: 56px;
+  padding: 15px 17px;
+  border: 1px solid rgba(137,176,214,.3);
+  border-radius: 15px;
+  background: rgba(1,8,21,.78);
+  color: #f4f9ff;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.18);
+}
+.campo input:focus {
+  border-color: #48d9ff;
+  box-shadow: 0 0 0 4px rgba(34,199,240,.13),0 0 26px rgba(34,199,240,.12);
+}
+.pw button { color: #a9c7e4; }
+#lok {
+  min-height: 58px;
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid rgba(155,242,255,.7);
+  border-radius: 15px;
+  background: linear-gradient(105deg,#087aa9,#12b9dc 58%,#55e1f3);
+  color: #021725;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  box-shadow: 0 12px 30px rgba(11,171,214,.28),inset 0 1px 0 rgba(255,255,255,.55);
+}
+#lok:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 17px 36px rgba(11,190,230,.38);
+}
+#lerr {
+  grid-area: error;
+  padding: 0 24px;
+  text-align: center;
+}
+.lpie {
+  grid-area: foot;
+  justify-content: center;
+  padding: 13px 10px 5px;
+  color: #8fa9c8;
+  text-align: center;
+}
+.linkbtn { color: #70e2ff; }
+@media (max-width: 760px) {
+  .login { padding: max(15px,env(safe-area-inset-top)) 15px max(15px,env(safe-area-inset-bottom)); }
+  .login-box {
+    grid-template-columns: 1fr;
+    grid-template-areas: "intro" "form" "error" "foot";
+    width: min(480px,100%);
+    min-height: 0;
+    padding: 9px;
+    border-radius: 25px;
+  }
+  .lhead {
+    min-height: 0;
+    padding: 24px 22px 22px;
+    border-radius: 18px;
+  }
+  .lhead::before {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+    margin: 0 0 18px;
+    border-radius: 18px;
+  }
+  .lhead h2 { font-size: clamp(1.55rem,7vw,2rem); }
+  .lhead p { margin-top: 10px; font-size: .92rem; }
+  .lhead::after { margin-top: 17px; padding-top: 12px; font-size: .6rem; }
+  .lform { gap: 15px; padding: 25px 16px 20px; }
+  .campo input { min-height: 52px; }
+  #lok { min-height: 54px; }
+  #lerr { padding: 0 12px; }
+  .lpie { padding: 10px 12px 13px; font-size: .78rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login::before,.login-box { animation:none !important; }
+}
