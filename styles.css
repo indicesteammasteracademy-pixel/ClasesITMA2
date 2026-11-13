@@ -486,3 +486,97 @@
   #tabs .tab, .grid .card, .grid .card::after, .grid .card .thumb img { transition: none !important; }
   .grid .card, .modulo { animation: none !important; }
 }
+
+
+/* ==========================================================
+   ITMA ACADEMY — REDISEÑO VISIBLE DEL MENÚ PRINCIPAL
+   ========================================================== */
+#home { max-width: 1280px; margin: 0 auto; }
+#tabs {
+  display:flex; flex-wrap:wrap; gap:12px; padding:14px;
+  margin:0 0 30px; border:1px solid rgba(34,199,240,.24);
+  border-radius:20px;
+  background:linear-gradient(135deg,rgba(8,25,49,.96),rgba(5,13,29,.92));
+  box-shadow:0 14px 36px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.05);
+}
+#tabs .tab {
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-height:54px; padding:13px 22px; border-radius:14px;
+  border:1px solid rgba(107,153,194,.28);
+  background:linear-gradient(145deg,#132944,#09172b);
+  color:#c5d8ed; font-weight:800; font-size:.96rem; letter-spacing:.025em;
+  box-shadow:0 7px 16px rgba(0,0,0,.24);
+  transition:all .24s ease;
+}
+#tabs .tab::before {
+  content:"✦"; display:grid; place-items:center; width:25px; height:25px;
+  border-radius:8px; color:#62e4ff; background:rgba(34,199,240,.13);
+  font-size:15px;
+}
+#tabs .tab:hover {
+  transform:translateY(-4px); color:#fff; border-color:#35d8ff;
+  background:linear-gradient(135deg,#17466a,#10253e);
+  box-shadow:0 12px 26px rgba(18,178,224,.2);
+}
+#tabs .tab.activa {
+  color:#031522; border-color:#75eaff;
+  background:linear-gradient(115deg,#20b9e7,#79edff);
+  box-shadow:0 8px 25px rgba(34,199,240,.35),inset 0 1px 0 rgba(255,255,255,.6);
+}
+#tabs .tab.activa::before { color:#06324a; background:rgba(255,255,255,.42); }
+.modulo {
+  margin:0 0 42px; padding:0 0 24px;
+  border-bottom:1px solid rgba(34,199,240,.14);
+  animation:itmaMenuEnter .45s ease both;
+}
+.modulo h2 {
+  display:flex; align-items:center; gap:13px;
+  min-height:62px; margin:0 0 22px; padding:13px 20px;
+  border:1px solid rgba(34,199,240,.28); border-left:5px solid #22c7f0;
+  border-radius:14px;
+  background:linear-gradient(100deg,rgba(18,92,128,.34),rgba(8,24,45,.88) 62%,rgba(7,15,30,.7));
+  color:#f1f8ff; font-family:Syne,Inter,sans-serif;
+  font-size:clamp(1.15rem,2.2vw,1.48rem); letter-spacing:.01em;
+  box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.modulo h2::before {
+  content:"🎓"; display:grid; place-items:center; flex:0 0 38px; height:38px;
+  border-radius:11px; background:linear-gradient(145deg,#0b7199,#123c60);
+  font-size:19px; box-shadow:0 0 18px rgba(34,199,240,.22);
+}
+.grid { gap:22px; }
+.grid .card {
+  border:1px solid rgba(69,147,190,.32); border-radius:19px;
+  background:linear-gradient(155deg,#0d1b30,#081221);
+  box-shadow:0 12px 28px rgba(0,0,0,.25);
+  transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease;
+}
+.grid .card:hover {
+  transform:translateY(-8px); border-color:#36d7ff;
+  box-shadow:0 20px 42px rgba(0,0,0,.34),0 0 0 1px rgba(34,199,240,.18),0 0 28px rgba(34,199,240,.15);
+}
+.grid .card .thumb { background:linear-gradient(135deg,#075078,#0a1b3a 58%,#020814); }
+.grid .card .thumb::after {
+  content:""; position:absolute; inset:45% 0 0;
+  background:linear-gradient(transparent,rgba(2,9,20,.42)); pointer-events:none;
+}
+.grid .card .info { padding:19px 20px 22px; }
+.grid .card .info h3 { color:#f1f7ff; font-size:1.08rem; line-height:1.35; }
+.grid .card:hover .info h3 { color:#54ddff; }
+.grid .card .info p { color:#91a9c8; }
+@keyframes itmaMenuEnter {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@media(max-width:650px) {
+  #tabs { display:flex; flex-wrap:nowrap; overflow-x:auto; padding:10px; gap:9px; border-radius:15px; }
+  #tabs .tab { flex:0 0 auto; min-height:48px; padding:10px 15px; font-size:.88rem; }
+  .modulo h2 { min-height:54px; padding:10px 13px; margin-bottom:16px; }
+  .modulo h2::before { flex-basis:32px; height:32px; }
+  .grid { gap:15px; }
+  .grid .card:hover { transform:translateY(-3px); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .modulo { animation:none; }
+  #tabs .tab,.grid .card { transition:none; }
+}
