@@ -913,3 +913,27 @@
     justify-items: center !important;
   }
 }
+
+
+/* ITMA v27 — recuperar el logo original en el encabezado del login */
+.login .lhead::before {
+  content: "";
+  display: block !important;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 14px;
+  border: 1px solid rgba(77,215,255,.72);
+  border-radius: 20px;
+  background: url("https://raw.githubusercontent.com/indicesteammasteracademy-pixel/ITMAMOVIL/main/www/ITMA_LOGO_INICIO_SESION.jpg") center / contain no-repeat;
+  box-shadow: 0 0 28px rgba(34,199,240,.28), 0 8px 24px rgba(0,0,0,.3);
+}
+.login .lhead { text-align: center; }
+.login .lhead h2, .login .lhead p { text-align: center; }
+@media (max-width: 760px) {
+  .login .lhead::before {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 11px;
+    border-radius: 16px;
+  }
+}
