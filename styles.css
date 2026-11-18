@@ -969,3 +969,17 @@
 .mailbox input, .mailbox textarea { background:var(--campo); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:11px 12px; font:inherit; font-size:1rem; resize:vertical; }
 .mailbox input:focus, .mailbox textarea:focus { outline:none; border-color:var(--accent); }
 #cmsg { color:var(--muted); font-size:.92rem; min-height:1.2em; margin:0; }
+
+/* ITMA WEB — fondo oficial adaptable; solo afecta la web */
+.login::before {
+  background-image: url("./IMAGEN_LOGO_WEB.png") !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-position: center center !important;
+}
+@media (max-width: 760px) {
+  .login::before {
+    background-size: cover !important;
+    background-position: center 38% !important;
+  }
+}
