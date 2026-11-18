@@ -109,6 +109,7 @@
     $("panel").classList.remove("show");
     $("panelAlumnos").classList.remove("show");
     $("panelActividad").classList.remove("show");
+    $("panelCorreo").classList.remove("show");
     actualizarQuien();
     dibujar();
     mostrarLogin(msg);
@@ -154,11 +155,13 @@
         $("panel").classList.add("show");
         $("panelAlumnos").classList.add("show");
         $("panelActividad").classList.add("show");
+        $("panelCorreo").classList.add("show");
         cargarAlumnos();
       } else {
         $("panel").classList.remove("show");
         $("panelAlumnos").classList.remove("show");
         $("panelActividad").classList.remove("show");
+        $("panelCorreo").classList.remove("show");
       }
       ajustarAdminBtn();
     } catch (e) {
@@ -493,11 +496,22 @@
   };
 
   // ---------- Alumnos (solo profesor) ----------
+  let alumnosCache = [];
+
   async function cargarAlumnos() {
     const r = await post({ action: "alumnoList" });
     const box = $("alista");
     box.innerHTML = "";
     if (r.error) { $("amsg").textContent = r.error; return; }
+    alumnosCache = r;
+    const dl = $("clista");
+    dl.innerHTML = "";
+    r.forEach(a => {
+      const o = document.createElement("option");
+      o.value = a.email;
+      if (a.nombre) o.label = a.nombre;
+      dl.appendChild(o);
+    });
     if (!r.length) { box.innerHTML = '<p class="hint" style="color:var(--muted);margin-top:10px">Aún no hay alumnos registrados.</p>'; return; }
     r.forEach(a => {
       const wrap = document.createElement("div");
@@ -1020,5 +1034,38 @@
   }
   $("actbtn").onclick = cargarActividad;
   $("actorden").onchange = () => { if ($("actres").dataset.cargado) cargarActividad(); };
+
+
+  // ---------- Enviar correo desde el panel ----------
+  $("cplantilla").onclick = () => {
+    const email = $("cpara").value.trim().toLowerCase().split(/[,;\s]+/)[0];
+    const al = alumnosCache.find(a => a.email === email);
+    const saludo = al && al.nombre ? "Hola " + al.nombre + "," : "Hola,";
+    $("casunto").value = "Ya estás registrado en ITMA Academy";
+    $("ccuerpo").value = saludo + "\n\nTe confirmamos que ya quedaste registrado en la plataforma de ITMA Academy. Entra con tu correo y tu código de acceso en este enlace:\n" +
+      location.href.split("#")[0] + "\n\nSi tienes alguna duda, responde a este correo.\n\nITMA Academy";
+  };
+
+  $("cenviar").onclick = async () => {
+    const msg = $("cmsg");
+    const para = $("cpara").value.trim();
+    const asunto = $("casunto").value.trim();
+    const cuerpo = $("ccuerpo").value.trim();
+    if (!para || !asunto || !cuerpo) { msg.textContent = "Completa el destinatario, el asunto y el mensaje."; return; }
+    $("cenviar").disabled = true;
+    msg.textContent = "Enviando…";
+    try {
+      const r = await post({ action: "correoEnviar", para, asunto, cuerpo });
+      if (r.error) { msg.textContent = r.error; return; }
+      msg.textContent = "¡Correo enviado a " + r.enviados + (r.enviados === 1 ? " destinatario" : " destinatarios") + "!";
+      $("cpara").value = "";
+      $("casunto").value = "";
+      $("ccuerpo").value = "";
+    } catch (e) {
+      msg.textContent = "No se pudo enviar. Revisa tu internet.";
+    } finally {
+      $("cenviar").disabled = false;
+    }
+  };
 
   cargar();
