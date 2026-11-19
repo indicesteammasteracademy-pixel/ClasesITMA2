@@ -999,3 +999,22 @@
     animation: none !important;
   }
 }
+
+
+/* ITMA WEB — fondo móvil a pantalla completa.
+   Solo afecta la web en pantallas pequeñas; escritorio conserva su fondo actual.
+   La app ITMAMOVIL no se modifica. */
+@media (max-width: 760px) {
+  .login::before {
+    inset: 0 !important;
+    height: auto !important;
+    background-color: #02050c !important;
+    background-image:
+      linear-gradient(to bottom, rgba(2,5,12,.08) 0%, rgba(2,5,12,.22) 55%, rgba(2,5,12,.58) 100%),
+      url("./IMAGEN_LOGO_WEB.png") !important;
+    background-repeat: no-repeat, no-repeat !important;
+    background-size: 100% 100%, cover !important;
+    background-position: center, center center !important;
+    animation: none !important;
+  }
+}
