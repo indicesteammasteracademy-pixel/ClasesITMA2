@@ -648,7 +648,7 @@
       });
       ok.disabled = false;
       if (r.error) { msg.textContent = r.error; return; }
-      $("amsg").textContent = "Actualizado: " + (r.nombre ? r.nombre + " · " : "") + r.email + " · código " + r.code +
+      $("amsg").textContent = "Actualizado: " + (r.nombre ? r.nombre + " · " : "") + r.email + (r.pendiente ? " · cambio inicial de contraseña pendiente" : r.code ? " · contraseña actualizada" : "") +
         (r.enviado === true ? " · correo enviado" : r.enviado === false ? " · no se pudo enviar el correo" : "");
       cargarAlumnos();
     };
@@ -791,7 +791,7 @@
     if (!nombre || !apellido) { msg.textContent = "Escribe tu nombre y apellido."; return; }
     if (c1 || c2) {
       if (c1 !== c2) { msg.textContent = "Los dos códigos no coinciden."; return; }
-      if (c1.length < 4) { msg.textContent = "El código debe tener al menos 4 caracteres."; return; }
+      if (c1.length < 12 || !/[A-Z]/.test(c1) || !/[a-z]/.test(c1) || !/[0-9]/.test(c1) || !/[^A-Za-z0-9]/.test(c1)) { msg.textContent = "La contraseña debe tener mínimo 12 caracteres e incluir mayúscula, minúscula, número y símbolo."; return; }
     }
     $("pf-ok").disabled = true;
     msg.textContent = "Guardando…";
