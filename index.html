@@ -41,12 +41,12 @@
 
   <div class="panel" id="panelAlumnos">
     <h2>Alumnos registrados</h2>
-    <p class="hint">Solo ellos pueden entrar. Agrega su correo; si dejas el código vacío, se crea uno solo. Pásale el código al alumno.</p>
+    <p class="hint">Solo ellos pueden entrar. Agrega su correo; se genera una contraseña temporal y se envía automáticamente al correo del alumno.</p>
     <div class="row">
       <input type="text" id="anombre" placeholder="Nombre" autocomplete="off">
       <input type="text" id="aapellido" placeholder="Apellido" autocomplete="off">
       <input type="text" id="aemail" placeholder="correo del alumno" autocapitalize="none">
-      <input type="text" id="acode" placeholder="código (opcional)" autocapitalize="none">
+      
       <button class="btn main" id="aok">Agregar alumno</button>
     </div>
     <p id="amsg"></p>
@@ -195,6 +195,6 @@
   </div>
 </div>
 
-<script src="app.js?v=19"></script>
+<script src="app.js?v=20"></script>
 </body>
 </html>
