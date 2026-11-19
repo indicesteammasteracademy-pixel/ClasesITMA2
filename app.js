@@ -115,6 +115,15 @@
     mostrarLogin(msg);
   }
 
+  function mostrarCambioClave() {
+    $("login").classList.remove("show", "saliendo");
+    $("cambioClave").classList.add("open");
+    $("cc-msg").textContent = "";
+    $("cc-nueva").value = "";
+    $("cc-confirmar").value = "";
+    setTimeout(() => $("cc-nueva").focus(), 100);
+  }
+
   async function cargar() {
     if (!hayAPI()) {
       clases = deBase();
@@ -130,6 +139,7 @@
       const r = clave ? await post({ action: "adminList" })
                       : await post({ action: "login", email: alumno.email, code: alumno.code });
       if (r.error) { cerrarSesion(r.error); return; }
+      if (!clave && r.debeCambiarClave) { mostrarCambioClave(); return; }
       const lista = Array.isArray(r) ? r : r.clases;
       vistos = new Set(Array.isArray(r) ? [] : (r.vistos || []));
       if (!clave && alumno && !Array.isArray(r) && r.nombre !== undefined) {
@@ -189,6 +199,33 @@
     }
     if (alumno) $("lcode").value = "";
   };
+  $("cc-guardar").onclick = async () => {
+    const nueva = $("cc-nueva").value;
+    const confirmar = $("cc-confirmar").value;
+    const msg = $("cc-msg");
+    if (nueva.length < 12 || !/[A-Z]/.test(nueva) || !/[a-z]/.test(nueva) || !/[0-9]/.test(nueva) || !/[^A-Za-z0-9]/.test(nueva)) {
+      msg.textContent = "Usa mínimo 12 caracteres e incluye mayúscula, minúscula, número y símbolo.";
+      return;
+    }
+    if (nueva !== confirmar) { msg.textContent = "Las contraseñas no coinciden."; return; }
+    if (!alumno) { msg.textContent = "Inicia sesión nuevamente."; return; }
+    const boton = $("cc-guardar");
+    boton.disabled = true;
+    msg.textContent = "Actualizando contraseña…";
+    try {
+      const r = await post({ action: "cambiarClaveInicial", email: alumno.email, code: alumno.code, nuevaClave: nueva, confirmacion: confirmar });
+      if (r.error) { msg.textContent = r.error; return; }
+      alumno.code = nueva;
+      guardarAlumno();
+      $("cambioClave").classList.remove("open");
+      await cargar();
+    } catch (e) {
+      msg.textContent = "No se pudo actualizar. Revisa tu conexión e inténtalo de nuevo.";
+    } finally {
+      boton.disabled = false;
+    }
+  };
+  $("cc-confirmar").onkeydown = e => { if (e.key === "Enter") $("cc-guardar").click(); };
   $("lcode").onkeydown = e => { if (e.key === "Enter") $("lok").click(); };
   $("lemail").onkeydown = e => { if (e.key === "Enter") $("lcode").focus(); };
   $("salir").onclick = () => { cerrarSesion(""); };
@@ -519,10 +556,15 @@
       const row = document.createElement("div");
       row.className = "al";
       const t = document.createElement("span");
-      t.textContent = (a.nombre ? a.nombre + "  ·  " : "") + a.email + "  ·  código: ";
-      const c = document.createElement("code");
-      c.textContent = a.code;
-      t.appendChild(c);
+      t.textContent = (a.nombre ? a.nombre + "  ·  " : "") + a.email;
+      if (a.pendiente) {
+        t.appendChild(document.createTextNode("  ·  contraseña temporal enviada; cambio pendiente"));
+      } else if (a.code) {
+        t.appendChild(document.createTextNode("  ·  código: "));
+        const c = document.createElement("code");
+        c.textContent = a.code;
+        t.appendChild(c);
+      }
       if (a.admin) {
         const tg = document.createElement("span");
         tg.className = "tagadm";
@@ -606,7 +648,7 @@
       });
       ok.disabled = false;
       if (r.error) { msg.textContent = r.error; return; }
-      $("amsg").textContent = "Actualizado: " + (r.nombre ? r.nombre + " · " : "") + r.email + " · código " + r.code +
+      $("amsg").textContent = "Actualizado: " + (r.nombre ? r.nombre + " · " : "") + r.email + (r.pendiente ? " · cambio inicial de contraseña pendiente" : r.code ? " · contraseña actualizada" : "") +
         (r.enviado === true ? " · correo enviado" : r.enviado === false ? " · no se pudo enviar el correo" : "");
       cargarAlumnos();
     };
@@ -619,11 +661,11 @@
     const email = $("aemail").value.trim();
     if (!nombre || !apellido || !email) { $("amsg").textContent = "Escribe el nombre, el apellido y el correo del alumno."; return; }
     $("aok").disabled = true;
-    const r = await post({ action: "alumnoAdd", nombre, apellido, email, code: $("acode").value.trim() });
+    const r = await post({ action: "alumnoAdd", nombre, apellido, email });
     $("aok").disabled = false;
     if (r.error) { $("amsg").textContent = r.error; return; }
-    $("amsg").textContent = "Agregado: " + r.nombre + " (" + r.email + ") · código " + r.code + (r.enviado ? " · correo enviado" : " · no se pudo enviar el correo, pásale el código tú");
-    $("anombre").value = ""; $("aapellido").value = ""; $("aemail").value = ""; $("acode").value = "";
+    $("amsg").textContent = "Cuenta creada para " + r.nombre + " (" + r.email + "). " + (r.enviado ? "La contraseña temporal fue enviada a su correo; deberá cambiarla al entrar." : "No se pudo confirmar el envío del correo.");
+    $("anombre").value = ""; $("aapellido").value = ""; $("aemail").value = ""; if ($("acode")) $("acode").value = "";
     cargarAlumnos();
   };
 
@@ -749,7 +791,7 @@
     if (!nombre || !apellido) { msg.textContent = "Escribe tu nombre y apellido."; return; }
     if (c1 || c2) {
       if (c1 !== c2) { msg.textContent = "Los dos códigos no coinciden."; return; }
-      if (c1.length < 4) { msg.textContent = "El código debe tener al menos 4 caracteres."; return; }
+      if (c1.length < 12 || !/[A-Z]/.test(c1) || !/[a-z]/.test(c1) || !/[0-9]/.test(c1) || !/[^A-Za-z0-9]/.test(c1)) { msg.textContent = "La contraseña debe tener mínimo 12 caracteres e incluir mayúscula, minúscula, número y símbolo."; return; }
     }
     $("pf-ok").disabled = true;
     msg.textContent = "Guardando…";

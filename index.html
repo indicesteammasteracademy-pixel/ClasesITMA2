@@ -41,12 +41,12 @@
 
   <div class="panel" id="panelAlumnos">
     <h2>Alumnos registrados</h2>
-    <p class="hint">Solo ellos pueden entrar. Agrega su correo; si dejas el código vacío, se crea uno solo. Pásale el código al alumno.</p>
+    <p class="hint">Solo ellos pueden entrar. Agrega su correo; se genera una contraseña temporal y se envía automáticamente al correo del alumno.</p>
     <div class="row">
       <input type="text" id="anombre" placeholder="Nombre" autocomplete="off">
       <input type="text" id="aapellido" placeholder="Apellido" autocomplete="off">
       <input type="text" id="aemail" placeholder="correo del alumno" autocapitalize="none">
-      <input type="text" id="acode" placeholder="código (opcional)" autocapitalize="none">
+      
       <button class="btn main" id="aok">Agregar alumno</button>
     </div>
     <p id="amsg"></p>
@@ -149,6 +149,18 @@
   </div>
 </div>
 
+<div class="pmodal" id="cambioClave" style="z-index:70">
+  <div class="pbox">
+    <h2>Protege tu cuenta ITMA</h2>
+    <p class="mail">Esta es una contraseña temporal. Debes crear una nueva para continuar y acceder a tus clases.</p>
+    <input type="password" id="cc-nueva" placeholder="Nueva contraseña (mínimo 12 caracteres)" autocomplete="new-password" minlength="12">
+    <input type="password" id="cc-confirmar" placeholder="Confirma tu nueva contraseña" autocomplete="new-password" minlength="12">
+    <p id="cc-msg" style="color:var(--muted);font-size:.9rem;min-height:1.2em;margin:0"></p>
+    <div class="prow"><button class="btn main" id="cc-guardar">Guardar contraseña y continuar</button></div>
+    <small style="color:var(--muted)">Debe incluir mayúsculas, minúsculas, números y un carácter especial.</small>
+  </div>
+</div>
+
 <div class="pmodal" id="perfil">
   <div class="pbox">
     <h2>Mis datos</h2>
@@ -163,8 +175,8 @@
     <p class="mail">Correo: <b id="pf-email"></b> <small>(no se puede cambiar)</small></p>
     <input type="text" id="pf-nombre" placeholder="Nombre" autocomplete="given-name">
     <input type="text" id="pf-apellido" placeholder="Apellido" autocomplete="family-name">
-    <input type="password" id="pf-code" placeholder="Nuevo código (déjalo vacío para no cambiarlo)" autocomplete="new-password">
-    <input type="password" id="pf-code2" placeholder="Repite el nuevo código" autocomplete="new-password">
+    <input type="password" id="pf-code" placeholder="Nueva contraseña (déjala vacía para no cambiarla)" autocomplete="new-password">
+    <input type="password" id="pf-code2" placeholder="Repite la nueva contraseña" autocomplete="new-password">
     <p id="pf-msg"></p>
     <div class="prow">
       <button class="btn main" id="pf-ok">Guardar</button>
@@ -183,6 +195,6 @@
   </div>
 </div>
 
-<script src="app.js?v=19"></script>
+<script src="app.js?v=20"></script>
 </body>
 </html>
