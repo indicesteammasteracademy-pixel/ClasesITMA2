@@ -837,25 +837,17 @@
   };
 
 
-  // El botón "Acceso profesor" no se ve para los alumnos. Solo aparece si se abre la página con #admin al final
-  // (queda recordado en ese dispositivo). Los administradores nombrados entran con su propio correo y código.
+  // El acceso de profesor solo se muestra a perfiles reconocidos como administradores
+  // por el servidor, después de iniciar sesión con su cuenta.
   function ajustarAdminBtn() {
-    let ver = location.hash === "#admin";
-    try {
-      if (ver) localStorage.setItem("itma_adminlink", "1");
-      else ver = localStorage.getItem("itma_adminlink") === "1";
-    } catch (e) {}
     const b = $("admin");
-    if (adminRol) {
-      // Solo el alumno nombrado administrador ve este botón, después de iniciar sesión
-      b.style.display = "inline-block";
+    const esAdmin = !!(adminRol && alumno);
+    b.style.display = esAdmin ? "inline-block" : "none";
+    if (esAdmin) {
       b.textContent = clave === "@rol" ? "Vista de alumno" : "Acceso profesor";
-    } else {
-      const mostrar = ver && !clave;
-      b.style.display = mostrar ? "inline-block" : "none";
-      b.textContent = "Acceso profesor";
     }
-    $("lprof").style.display = (ver && !clave && !adminRol) ? "" : "none";
+    // Nunca mostrar el acceso alternativo desde la pantalla de inicio de sesión.
+    if ($("lprof")) $("lprof").style.display = "none";
   }
   window.addEventListener("hashchange", ajustarAdminBtn);
   ajustarAdminBtn();
