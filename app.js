@@ -15,6 +15,7 @@
   let clases = [];
   let clave = "";   // solo en memoria; el servidor es quien verifica la clave
   let alumno = null; // {email, code} del alumno que entró
+  let cambioInicialPendiente = false;
   let adminRol = false; // el alumno que entró es administrador
   let vistos = new Set(); // IDs de las clases que el alumno ya vio
   let modulos = ["Clases"]; // nombres de los módulos (carpetas de Drive)
@@ -104,6 +105,11 @@
     clave = "";
     try { localStorage.removeItem("itma_alumno"); localStorage.removeItem("itma_clave"); } catch (e) {}
     clases = [];
+    cambioInicialPendiente = false;
+    if ($("lform")) $("lform").style.display = "grid";
+    if ($("primerCambio")) $("primerCambio").style.display = "none";
+    const subtituloLogin = document.querySelector("#login .lhead p");
+    if (subtituloLogin) subtituloLogin.textContent = "Ingresa con el correo con el que te registraron y tu código personal.";
     $("salir").style.display = "none";
     ajustarAdminBtn();
     $("panel").classList.remove("show");
@@ -130,6 +136,17 @@
       const r = clave ? await post({ action: "adminList" })
                       : await post({ action: "login", email: alumno.email, code: alumno.code });
       if (r.error) { cerrarSesion(r.error); return; }
+      if (!clave && alumno && !Array.isArray(r) && r.debeCambiarClave) {
+        cambioInicialPendiente = true;
+        $("lform").style.display = "none";
+        $("primerCambio").style.display = "grid";
+        document.querySelector("#login .lhead p").textContent = "Por seguridad, crea una nueva contraseña para continuar.";
+        $("lerr").textContent = "";
+        $("login").classList.add("show");
+        $("login").classList.remove("saliendo");
+        return;
+      }
+      cambioInicialPendiente = false;
       const lista = Array.isArray(r) ? r : r.clases;
       vistos = new Set(Array.isArray(r) ? [] : (r.vistos || []));
       if (!clave && alumno && !Array.isArray(r) && r.nombre !== undefined) {
@@ -184,12 +201,47 @@
     await cargar();
     $("lok").disabled = false;
     $("lok").classList.remove("cargando");
-    if (alumno) {
+    if (alumno && !cambioInicialPendiente) {
       guardarAlumno();
     }
     if (alumno) $("lcode").value = "";
   };
   $("lcode").onkeydown = e => { if (e.key === "Enter") $("lok").click(); };
+
+  // Primer ingreso: reemplaza la contraseña temporal antes de mostrar las clases.
+  $("guardarClaveInicial").onclick = async () => {
+    const nueva = $("nuevaClave").value;
+    const confirmar = $("confirmarClave").value;
+    const msg = $("cambioMsg");
+    const boton = $("guardarClaveInicial");
+    msg.textContent = "";
+    if (nueva.length < 12) { msg.textContent = "La contraseña debe tener mínimo 12 caracteres."; return; }
+    if (!/[A-Z]/.test(nueva) || !/[a-z]/.test(nueva) || !/[0-9]/.test(nueva) || !/[^A-Za-z0-9]/.test(nueva)) {
+      msg.textContent = "Incluye mayúscula, minúscula, número y carácter especial."; return;
+    }
+    if (nueva !== confirmar) { msg.textContent = "Las contraseñas no coinciden."; return; }
+    if (!alumno) { msg.textContent = "Vuelve a ingresar con tu correo y contraseña temporal."; return; }
+    boton.disabled = true;
+    boton.textContent = "Guardando...";
+    try {
+      const r = await post({ action: "cambiarClaveInicial", email: alumno.email, code: alumno.code, nuevaClave: nueva, confirmacion: confirmar });
+      if (r.error) { msg.textContent = r.error; return; }
+      alumno.code = nueva;
+      cambioInicialPendiente = false;
+      guardarAlumno();
+      $("nuevaClave").value = "";
+      $("confirmarClave").value = "";
+      $("primerCambio").style.display = "none";
+      $("lform").style.display = "grid";
+      document.querySelector("#login .lhead p").textContent = "Contraseña actualizada. Cargando tus clases...";
+      await cargar();
+    } catch (e) {
+      msg.textContent = "No se pudo actualizar la contraseña. Revisa tu conexión e inténtalo de nuevo.";
+    } finally {
+      boton.disabled = false;
+      boton.textContent = "Guardar contraseña";
+    }
+  };
   $("lemail").onkeydown = e => { if (e.key === "Enter") $("lcode").focus(); };
   $("salir").onclick = () => { cerrarSesion(""); };
   $("lver").onclick = () => {

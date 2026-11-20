@@ -1018,3 +1018,12 @@
     animation: none !important;
   }
 }
+
+
+/* Cambio obligatorio de contraseña en el primer ingreso */
+.cambio-clave { display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:end; margin-top:18px; }
+.cambio-clave .campo { min-width:0; }
+.cambio-ayuda, #cambioMsg { grid-column:1 / -1; color:var(--muted); font-size:.88rem; }
+#cambioMsg { color:#ffb4b4; min-height:1.2em; }
+#guardarClaveInicial { min-height:48px; }
+@media (max-width:640px) { .cambio-clave { grid-template-columns:1fr; } }

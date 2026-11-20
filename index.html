@@ -129,7 +129,7 @@
       <h2>Bienvenido a ITMA Academy</h2>
       <p>Ingresa con el correo con el que te registraron y tu código personal.</p>
     </div>
-    <div class="lform">
+    <div class="lform" id="lform">
       <label class="campo"><span>Correo</span>
         <input type="text" id="lemail" placeholder="tucorreo@gmail.com" autocomplete="email" autocapitalize="none" inputmode="email">
       </label>
@@ -140,6 +140,17 @@
         </div>
       </label>
       <button class="btn main" id="lok"><span class="lt">Entrar</span><span class="spin"></span></button>
+    </div>
+    <div class="cambio-clave" id="primerCambio" style="display:none">
+      <label class="campo"><span>Nueva contraseña</span>
+        <input type="password" id="nuevaClave" placeholder="Mínimo 12 caracteres" minlength="12" autocomplete="new-password">
+      </label>
+      <label class="campo"><span>Confirmar contraseña</span>
+        <input type="password" id="confirmarClave" placeholder="Repite tu contraseña" minlength="12" autocomplete="new-password">
+      </label>
+      <p class="cambio-ayuda">Debe incluir mayúscula, minúscula, número y carácter especial.</p>
+      <button class="btn main" id="guardarClaveInicial" type="button">Guardar contraseña</button>
+      <p id="cambioMsg" role="status" aria-live="polite"></p>
     </div>
     <p id="lerr"></p>
     <div class="lpie">
