@@ -837,16 +837,19 @@
   };
 
 
-  // El acceso de profesor solo se muestra a perfiles reconocidos como administradores
-  // por el servidor, después de iniciar sesión con su cuenta.
+  // El acceso de profesor aparece al usar #admin, como en la versión anterior.
+  // La clave sigue verificándose en Apps Script; el hash no concede permisos.
   function ajustarAdminBtn() {
     const b = $("admin");
     const esAdmin = !!(adminRol && alumno);
-    b.style.display = esAdmin ? "inline-block" : "none";
-    if (esAdmin) {
-      b.textContent = clave === "@rol" ? "Vista de alumno" : "Acceso profesor";
+    const accesoDirecto = window.location.hash.toLowerCase() === "#admin";
+    b.style.display = (esAdmin || accesoDirecto) ? "inline-block" : "none";
+    if (esAdmin && clave === "@rol") {
+      b.textContent = "Vista de alumno";
+    } else {
+      b.textContent = "Acceso profesor";
     }
-    // Nunca mostrar el acceso alternativo desde la pantalla de inicio de sesión.
+    // Se mantiene oculto el acceso alternativo del formulario de inicio.
     if ($("lprof")) $("lprof").style.display = "none";
   }
   window.addEventListener("hashchange", ajustarAdminBtn);
